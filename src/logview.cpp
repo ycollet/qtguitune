@@ -33,18 +33,16 @@ QString note_us_alt[12]  = {"A","A#","B","C","C#","D","D#","E","F","F#","G","G#"
 
 QString *note = NULL;
 
-char * tuning_nat[23] = {"25/24","16/15","9/8",  "7/6",  "75/64","6/5",  "5/4","32/25","125/96",
-			 "4/3",  "25/18","45/32","36/25","3/2",  "25/16","8/5","5/3",  "125/72",
-			 "16/9",  "9/5", "15/8", "48/25","125/64"};
+const char * tuning_nat[23] = {"25/24","16/15","9/8",  "7/6",  "75/64","6/5",  "5/4","32/25","125/96",
+			       "4/3",  "25/18","45/32","36/25","3/2",  "25/16","8/5","5/3",  "125/72",
+			       "16/9",  "9/5", "15/8", "48/25","125/64"};
 
-LogView::LogView(QWidget *parent, QString name, Qt::WindowFlags f, bool allowLines) : QFrame(parent,f)
+LogView::LogView(QWidget *parent) : QFrame(parent)
 										      //QFrame(parent,name,f,allowLines)
 {
   int r, g, b, gray;
   QPalette Pal(palette());
 
-  setWindowTitle(name);
-  
   grundton = 0;
   nat_tuning_on = false;
 
@@ -92,10 +90,10 @@ int LogView::pos_note(int pos)
 void LogView::drawarrow(QColor col)
 {
   int x, y;
-  QPainter p(this);
   
   setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
   
+  QPainter p(this);
   p.setPen(Qt::white);
   x = lfreq_pos(lfreq);
   y = y0;
@@ -109,13 +107,12 @@ void LogView::drawarrow(QColor col)
 void LogView::deletearrow(QColor col)
 {
   int x, y;
-  QPainter p(this);
   
   setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
   
-  p.setPen(col);
+  QPainter p(this);
   p.setPen(arrow_bgcol);
-  //        x=(int)( x0+(lfreq-lfreq0)*(width()-20)/LOG_2+0.5 );
+  //        x=(int)(x0 + (lfreq - lfreq0) * (width() - 20) / LOG_2 + 0.5);
   x = lfreq_pos(lfreq);
   y = y0;
   p.fillRect(x - 6, y + 1, 13, h - 1, arrow_bgcol);
@@ -186,7 +183,6 @@ void LogView::paintEvent(QPaintEvent *)
   double nat_lfreq[23];
   int z,n;
   int r,g,b;
-  QPainter p(this);
   QPalette Pal(palette());
   
   r = Pal.color(QPalette::Background).red();
@@ -215,6 +211,7 @@ void LogView::paintEvent(QPaintEvent *)
     }
   }
   
+  QPainter p(this);
   //QRect re(rect()); //YC
   //p.eraseRect(re); //YC
   

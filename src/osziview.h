@@ -21,7 +21,7 @@ class OsziView : public QWidget
 {
   // Q_OBJECT
  public:
-  OsziView(QWidget *parent, QString name);
+  OsziView(QWidget *parent);
   ~OsziView();
 
   void   paintSample(void);

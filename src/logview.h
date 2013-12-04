@@ -26,7 +26,7 @@ class LogView : public QFrame
   //    Q_OBJECT
 
  public:
-  LogView( QWidget *parent, QString name, Qt::WindowFlags f=0, bool allowLines=TRUE);
+  LogView(QWidget *parent);
   ~LogView();
 
   enum {us_scale, us_scale_alt, german_scale, german_scale_alt};

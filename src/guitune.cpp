@@ -192,7 +192,7 @@ int MainWidget::init_audio()
     ioctl(audio, SNDCTL_DSP_SETDUPLEX, 0);
     {
       int caps;
-      ioctl( audio, SNDCTL_DSP_GETCAPS, &caps );
+      ioctl(audio, SNDCTL_DSP_GETCAPS, &caps);
       std::cout << "OSS-Version "  << int(caps & DSP_CAP_REVISION) << std::endl;
       std::cout << "  DUPLEX   = " << int(caps & DSP_CAP_DUPLEX)   << std::endl;
       std::cout << "  REALTIME = " << int(caps & DSP_CAP_REALTIME) << std::endl;
@@ -225,12 +225,8 @@ int MainWidget::init_audio()
   return(audio);
 }
 
-MainWidget::MainWidget( QWidget *parent, const char *name, int argc, char **argv ) : QWidget(parent)
+MainWidget::MainWidget(QWidget *parent, int argc, char **argv) : QWidget(parent)
 {
-  int i;
-
-  setWindowTitle(name);
-  
   KAMMERTON     = KAMMERTON_NORM;
   KAMMERTON_LOG = KAMMERTON_LOG_NORM;
 
@@ -246,18 +242,18 @@ MainWidget::MainWidget( QWidget *parent, const char *name, int argc, char **argv
   freqs[0]  = KAMMERTON;
   lfreqs[0] = KAMMERTON_LOG;
   
-  for(i=1;i<12;i++) {
+  for(int i=1;i<12;i++) {
     freqs [i] = freqs [i-1] * D_NOTE;
     lfreqs[i] = lfreqs[i-1] + D_NOTE_LOG;
   }
   
-  oszi = new OsziView( this, "oszi_name" );
-  oszi->setSampleNr( sampnr );
+  oszi = new OsziView(this);
+  oszi->setSampleNr(sampnr);
   oszi->setSampleFreq(sampfreq_exact);
   
-  logview = new LogView( this, "logview_name" );
-  logview->setFrameStyle( QFrame::Box | QFrame::Sunken );
-  logview->setLineWidth( 2 );
+  logview = new LogView(this);
+  logview->setFrameStyle(QFrame::Box | QFrame::Sunken);
+  logview->setLineWidth(2);
   
   freqview = new QLCDNumber(parent);
   freqview->setNumDigits(9);
@@ -276,6 +272,7 @@ MainWidget::MainWidget( QWidget *parent, const char *name, int argc, char **argv
   sampfreq_input->setValue(sampfreq);
   
   connect(sampfreq_input, SIGNAL(valueChanged(int)), this, SLOT(setSampFreq(int)));
+  
   sampnr_input = new QSpinBox();
   sampnr_input->setMinimum(32);
   sampnr_input->setMaximum(11048);
@@ -318,7 +315,10 @@ void MainWidget::proc_audio()
   trig = 0;
   if (i<n) do {
       for( ; i<n-1; i++)   /* n-1 because of POSTRIG uses i+1 */
-	if (POSTRIG(c,i)) { trig=1; trigpos=i; }
+	if (POSTRIG(c,i)) {
+	  trig    = 1;
+	  trigpos = i;
+	}
       if (trig==0) {
 	n = read(audio, c, blksize);
 	j++;
@@ -332,7 +332,7 @@ void MainWidget::proc_audio()
       n  = read(audio, c, blksize);
     }
 
-    oszi->setSamplePtr( &sample[trigpos] );
+    oszi->setSamplePtr(&sample[trigpos]);
     oszi->paintSample();
     
     freq_0t  = (double)sampfreq*oszi->getfreq2();
@@ -365,64 +365,63 @@ void MainWidget::proc_audio()
   processing_audio = 0;
 }
 
-void MainWidget::paintEvent( QPaintEvent * )
+void MainWidget::paintEvent(QPaintEvent *)
 {
   QPainter p(this);
   
   p.setFont(QFont("System",8));
   
   p.setPen(Qt::black);
-  p.drawText(freqview->x()-p.fontMetrics().width(tr("Freq.:"))-5+1,
-	     freqview->y()+p.fontMetrics().ascent()+1
-	     +p.fontMetrics().height(), tr("Freq.:"));
+  p.drawText(freqview->x() - p.fontMetrics().width(tr("Freq.:")) - 5 + 1,
+	     freqview->y() + p.fontMetrics().ascent() + 1 + p.fontMetrics().height(),
+	     tr("Freq.:"));
 
   p.setPen(Qt::white);
-  p.drawText(freqview->x()-p.fontMetrics().width(tr("Freq.:"))-5,
-	     freqview->y()+p.fontMetrics().ascent()
-	     +p.fontMetrics().height(), tr("Freq.:"));
-
-  p.setPen(Qt::black);
-  p.drawText(nfreqview->x()-p.fontMetrics().width(tr("Note:"))-5+1,
-	     nfreqview->y()+p.fontMetrics().ascent()+1
-	     +p.fontMetrics().height(), tr("Note:"));
-  
-  p.setPen(Qt::white);
-  p.drawText(nfreqview->x()-p.fontMetrics().width(tr("Note:"))-5,
-	     nfreqview->y()+p.fontMetrics().ascent()
-	     +p.fontMetrics().height(), tr("Note:"));
+  p.drawText(freqview->x() - p.fontMetrics().width(tr("Freq.:")) - 5,
+	     freqview->y() + p.fontMetrics().ascent() + p.fontMetrics().height(),
+	     tr("Freq.:"));
 
   p.setPen(Qt::black);
-  p.drawText(sampfreq_input->x()-p.fontMetrics().width(tr("Sample Freq.:"))-5+1,
-	     sampfreq_input->y()+p.fontMetrics().ascent()+1
-	     +p.fontMetrics().height()-3, tr("Sample Freq.:"));
+  p.drawText(nfreqview->x() - p.fontMetrics().width(tr("Note:")) - 5 + 1,
+	     nfreqview->y() + p.fontMetrics().ascent() + 1 + p.fontMetrics().height(),
+	     tr("Note:"));
   
   p.setPen(Qt::white);
-  p.drawText(sampfreq_input->x()-p.fontMetrics().width(tr("Sample Freq.:"))-5,
-	     sampfreq_input->y()+p.fontMetrics().ascent()
-	     +p.fontMetrics().height()-3, tr("Sample Freq.:"));
+  p.drawText(nfreqview->x() - p.fontMetrics().width(tr("Note:")) - 5,
+	     nfreqview->y() + p.fontMetrics().ascent() + p.fontMetrics().height(),
+	     tr("Note:"));
 
   p.setPen(Qt::black);
-  p.drawText(sampnr_input->x()-p.fontMetrics().width(tr("Sample #:"))-5+1,
-	     sampnr_input->y()+p.fontMetrics().ascent()+1
-	     +p.fontMetrics().height()-3, tr("Sample #:"));
+  p.drawText(sampfreq_input->x() - p.fontMetrics().width(tr("Sample Freq.:")) - 5 + 1,
+	     sampfreq_input->y() + p.fontMetrics().ascent() + 1 + p.fontMetrics().height() - 3,
+	     tr("Sample Freq.:"));
   
   p.setPen(Qt::white);
-  p.drawText(sampnr_input->x()-p.fontMetrics().width(tr("Sample #:"))-5,
-	     sampnr_input->y()+p.fontMetrics().ascent()
-	     +p.fontMetrics().height()-3, tr("Sample #:"));
+  p.drawText(sampfreq_input->x() - p.fontMetrics().width(tr("Sample Freq.:")) - 5,
+  	     sampfreq_input->y() + p.fontMetrics().ascent() + p.fontMetrics().height() - 3,
+	     tr("Sample Freq.:"));
 
   p.setPen(Qt::black);
-  p.drawText(trigger_input->x()-p.fontMetrics().width(tr("Trig.(% of max):"))-5+1,
-	     trigger_input->y()+p.fontMetrics().ascent()+1
-	     +p.fontMetrics().height()-3, tr("Trig.(% of max):"));
+  p.drawText(sampnr_input->x() - p.fontMetrics().width(tr("Sample #:")) - 5 + 1,
+	     sampnr_input->y() + p.fontMetrics().ascent() + 1 + p.fontMetrics().height() - 3,
+	     tr("Sample #:"));
   
   p.setPen(Qt::white);
-  p.drawText(trigger_input->x()-p.fontMetrics().width(tr("Trig.(% of max):"))-5,
-	     trigger_input->y()+p.fontMetrics().ascent()
-	     +p.fontMetrics().height()-3, tr("Trig.(% of max):"));
+  p.drawText(sampnr_input->x() - p.fontMetrics().width(tr("Sample #:")) - 5,
+	     sampnr_input->y() + p.fontMetrics().ascent() + p.fontMetrics().height() - 3,
+	     tr("Sample #:"));
+
+  p.setPen(Qt::black);
+  p.drawText(trigger_input->x() - p.fontMetrics().width(tr("Trig.(% of max):")) - 5 + 1,
+	     trigger_input->y() + p.fontMetrics().ascent() + 1 + p.fontMetrics().height() - 3,
+	     tr("Trig.(% of max):"));
+  
+  p.setPen(Qt::white);
+  p.drawText(trigger_input->x() - p.fontMetrics().width(tr("Trig.(% of max):")) - 5,
+	     trigger_input->y() + p.fontMetrics().ascent() + p.fontMetrics().height() - 3,
+	     tr("Trig.(% of max):"));
   
   p.end();
-  
   update();  
 }
 

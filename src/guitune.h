@@ -26,7 +26,7 @@ class MainWidget : public QWidget
 {
  Q_OBJECT
  public:
-  MainWidget(QWidget *parent, const char *name , int argc, char **argv);
+  MainWidget(QWidget *parent, int argc, char **argv);
   ~MainWidget();
   int    init_audio();
   int    sampnr;

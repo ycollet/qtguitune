@@ -25,7 +25,7 @@
 
 MainWindow::MainWindow(QWidget *parent, QString name, int argc, char **argv) : QMainWindow(parent)
 {
-  mw = new MainWidget(this, "MainWidget", argc, argv);
+  mw = new MainWidget(this, argc, argv);
   setCentralWidget(mw);
   mw->setMinimumSize(380,240);
   setWindowTitle(name);

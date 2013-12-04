@@ -26,11 +26,10 @@
 #include "resources.h"
 #include "osziview.h"
 
-OsziView::OsziView(QWidget *parent, QString name) : QWidget(parent)
+OsziView::OsziView(QWidget *parent) : QWidget(parent)
 {
   QPalette Pal(palette());
 
-  setWindowTitle(name);
   Pal.setColor(QPalette::Background, QColor(Qt::white));
   setAutoFillBackground(true);
   setPalette(Pal);
@@ -44,9 +43,10 @@ void OsziView::paintSample(void)
 {
   int i,x1,x2,y1,y2;
   //erase();
-  QPainter paint(this);
   
   setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+  
+  QPainter paint(this);
   
   paint.eraseRect(xscr, yscr, wscr + 1, hscr + 1);
   paint.setPen(Qt::gray);
@@ -106,8 +106,8 @@ double OsziView::getfreq2(void)
   for(i=0, A2=0; i<sampnr; i++)
     if (A2 < Abs(samp[i] - 128) && samp[i] - 128 < 0) A2 = Abs(samp[i] - 128);
 
-  t1 = 128 + (int)( A1 * trigfact + 0.5 );
-  t2 = 128 - (int)( A2 * trigfact + 0.5 );
+  t1 = 128 + (int)(A1 * trigfact + 0.5);
+  t2 = 128 - (int)(A2 * trigfact + 0.5);
   
   startpoint = 0;
   for(i=1; !LEVTRIG(samp,i,t1) && i<sampnr; i++);
