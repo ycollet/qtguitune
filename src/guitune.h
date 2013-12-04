@@ -1,5 +1,4 @@
 //
-//
 //    guitune - program for tuning instruments (actually an oscilloscope)
 //    Copyright (C) 1999  Florian Berger
 //    Email: florian.berger@jk.uni-linz.ac.at
@@ -16,7 +15,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program; if not, write to the Free Software
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-//
 //
 
 #include <QtGui>
@@ -82,20 +80,20 @@ class MainWidget : public QWidget
   QLCDNumber *nfreqview;
   QTimer     *timer;
   QMenuBar   *menu;
-  QMenu *filemenu;
-  QMenu *optmenu;
-  QMenu *viewmenu;
+  QMenu      *filemenu;
+  QMenu      *optmenu;
+  QMenu      *viewmenu;
   QSpinBox   *sampfreq_input;
   QSpinBox   *sampnr_input;
   QSpinBox   *trigger_input;
   //   FreqView *freqview;
-  int oszi_height;
+  int    oszi_height;
   unsigned char sample[64000];
   double freqs[12];
   double lfreqs[12];
   int    processing_audio;
-  char dsp_devicename[100];
+  char   dsp_devicename[100];
 
  private slots:
- void proc_audio();
+  void proc_audio();
 };

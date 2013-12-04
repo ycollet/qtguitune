@@ -96,15 +96,13 @@ void LogView::drawarrow(QColor col)
   
   setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
   
-  qDebug() << "LogView: paintEvent2 - begin";
-  
   p.setPen(Qt::white);
   x = lfreq_pos(lfreq);
   y = y0;
   p.fillRect(x - 6, y + 1, 13, h - 1, col);
   p.drawLine(x, y + 1, x, y + h - 1);
   p.end();
-  qDebug() << "LogView: paintEvent2 - end";
+  
   update();
 }
 
@@ -114,7 +112,6 @@ void LogView::deletearrow(QColor col)
   QPainter p(this);
   
   setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
-  qDebug() << "LogView: paintEvent3 - begin";
   
   p.setPen(col);
   p.setPen(arrow_bgcol);
@@ -123,7 +120,7 @@ void LogView::deletearrow(QColor col)
   y = y0;
   p.fillRect(x - 6, y + 1, 13, h - 1, arrow_bgcol);
   p.end();
-  qDebug() << "LogView: paintEvent3 - end";
+  
   update();
 }
 
@@ -189,9 +186,8 @@ void LogView::paintEvent(QPaintEvent *)
   double nat_lfreq[23];
   int z,n;
   int r,g,b;
+  QPainter p(this);
   QPalette Pal(palette());
-  
-  qDebug() << "LogView: paintEvent - begin";
   
   r = Pal.color(QPalette::Background).red();
   g = Pal.color(QPalette::Background).green();
@@ -219,9 +215,8 @@ void LogView::paintEvent(QPaintEvent *)
     }
   }
   
-  QPainter p(this);
-  QRect re(rect()); //YC
-  p.eraseRect(re); //YC
+  //QRect re(rect()); //YC
+  //p.eraseRect(re); //YC
   
   p.setPen(qRgb(0x50,0x50,0x50));
   
@@ -303,7 +298,7 @@ void LogView::paintEvent(QPaintEvent *)
   }
   
   p.end();
-  qDebug() << "LogView: paintEvent - end";
+  
   update();
 }
 

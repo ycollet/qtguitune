@@ -17,6 +17,8 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include <iostream>
+
 #include <QtGui>
 
 #include "mainwindow.h"
@@ -28,20 +30,20 @@ MainWindow::MainWindow(QWidget *parent, QString name, int argc, char **argv) : Q
   mw->setMinimumSize(380,240);
   setWindowTitle(name);
 
-  QAction* FileExitAction = new QAction("E&xit", parent);
+  FileExitAction = new QAction(tr("E&xit"), parent);
   connect(FileExitAction, SIGNAL(triggered()), this, SLOT(close()));
-  filemenu = menuBar()->addMenu("&File");
+  filemenu = menuBar()->addMenu(tr("&File"));
   filemenu->addAction(FileExitAction);
     
-  optmenu    = menuBar()->addMenu("&Options");
-  tuningmenu = optmenu->addMenu("&Tuning");
-  scalemenu  = optmenu->addMenu("&Note Scale");
+  optmenu    = menuBar()->addMenu(tr("&Options"));
+  tuningmenu = optmenu->addMenu(tr("&Tuning"));
+  scalemenu  = optmenu->addMenu(tr("&Note Scale"));
 
-  QAction* TuningNormalAction      = new QAction("&Normal", parent);
-  QAction* TuningWienAction        = new QAction("&Wien", parent);
-  QAction* TuningPhysicalAction    = new QAction("&Physical", parent);
-  QAction* TuningEquidistantAction = new QAction("&Equidistant", parent);
-  QAction* TuningNaturalAction     = new QAction("N&atural", parent);
+  TuningNormalAction      = new QAction(tr("&Normal"), parent);
+  TuningWienAction        = new QAction(tr("&Wien"), parent);
+  TuningPhysicalAction    = new QAction(tr("&Physical"), parent);
+  TuningEquidistantAction = new QAction(tr("&Equidistant"), parent);
+  TuningNaturalAction     = new QAction(tr("N&atural"), parent);
   TuningNormalAction->setCheckable(true);
   TuningWienAction->setCheckable(true);
   TuningPhysicalAction->setCheckable(true);
@@ -61,12 +63,11 @@ MainWindow::MainWindow(QWidget *parent, QString name, int argc, char **argv) : Q
   tuningmenu->addSeparator();
   tuningmenu->addAction(TuningEquidistantAction);
   tuningmenu->addAction(TuningNaturalAction);
-  tuningmenu->menuAction()->setCheckable(true);
 
-  QAction* ViewUSAction      = new QAction("&US", parent);
-  QAction* ViewUSaAction     = new QAction("U&S-Alternate", parent);
-  QAction* ViewGermanAction  = new QAction("&German", parent);
-  QAction* ViewGermanaAction = new QAction("G&erman-Alt.", parent);
+  ViewUSAction      = new QAction(tr("&US"), parent);
+  ViewUSaAction     = new QAction(tr("U&S-Alternate"), parent);
+  ViewGermanAction  = new QAction(tr("&German"), parent);
+  ViewGermanaAction = new QAction(tr("G&erman-Alt."), parent);
   ViewUSAction->setCheckable(true);
   ViewUSaAction->setCheckable(true);
   ViewGermanAction->setCheckable(true);
@@ -95,85 +96,99 @@ void MainWindow::resizeEvent(QResizeEvent *)
 void MainWindow::m_tuning_norm()
 {
   mw->setTuningNorm();
-  tuningmenu->menuAction()->setChecked(true);
-  tuningmenu->menuAction()->setChecked(false);
-  tuningmenu->menuAction()->setChecked(false);
+  TuningNormalAction->setChecked(true);
+  TuningWienAction->setChecked(false);
+  TuningPhysicalAction->setChecked(false);
 }
 
 void MainWindow::m_tuning_wien()
 {
   mw->setTuningWien();
-  tuningmenu->menuAction()->setChecked(false);
-  tuningmenu->menuAction()->setChecked(true);
-  tuningmenu->menuAction()->setChecked(false);
+  TuningNormalAction->setChecked(false);
+  TuningWienAction->setChecked(true);
+  TuningPhysicalAction->setChecked(false);
 }
 
 void MainWindow::m_tuning_phys()
 {
   mw->setTuningPhys();
-  tuningmenu->menuAction()->setChecked(false);
-  tuningmenu->menuAction()->setChecked(false);
-  tuningmenu->menuAction()->setChecked(true);
+  TuningNormalAction->setChecked(false);
+  TuningWienAction->setChecked(false);
+  TuningPhysicalAction->setChecked(true);
 }
 
 void MainWindow::m_tuning_equi()
 {
   mw->setTuningEqui();
-  tuningmenu->menuAction()->setChecked(true);
-  tuningmenu->menuAction()->setChecked(false);
+  TuningEquidistantAction->setChecked(true);
+  TuningNaturalAction->setChecked(false);
 }
 
 void MainWindow::m_tuning_nat()
 {
   mw->setTuningNat();
-  tuningmenu->menuAction()->setChecked(false);
-  tuningmenu->menuAction()->setChecked(true);
+  TuningEquidistantAction->setChecked(false);
+  TuningNaturalAction->setChecked(true);
 }
 
 void MainWindow::m_scale_US()
 {
   mw->setScaleUS();
-  scalemenu->menuAction()->setChecked(true);
-  scalemenu->menuAction()->setChecked(false);
-  scalemenu->menuAction()->setChecked(false);
-  scalemenu->menuAction()->setChecked(false);
+  ViewUSAction->setChecked(true);
+  ViewUSaAction->setChecked(false);
+  ViewGermanAction->setChecked(false);
+  ViewGermanaAction->setChecked(false);
 }
 
 void MainWindow::m_scale_USa()
 {
   mw->setScaleUSAlt();
-  scalemenu->menuAction()->setChecked(false);
-  scalemenu->menuAction()->setChecked(true);
-  scalemenu->menuAction()->setChecked(false);
-  scalemenu->menuAction()->setChecked(false);
+  ViewUSAction->setChecked(false);
+  ViewUSaAction->setChecked(true);
+  ViewGermanAction->setChecked(false);
+  ViewGermanaAction->setChecked(false);
 }
 
 void MainWindow::m_scale_GE()
 {
   mw->setScaleGE();
-  scalemenu->menuAction()->setChecked(false);
-  scalemenu->menuAction()->setChecked(false);
-  scalemenu->menuAction()->setChecked(true);
-  scalemenu->menuAction()->setChecked(false);
+  ViewUSAction->setChecked(false);
+  ViewUSaAction->setChecked(false);
+  ViewGermanAction->setChecked(true);
+  ViewGermanaAction->setChecked(false);
 }
 
 void MainWindow::m_scale_GEa()
 {
   mw->setScaleGEAlt();
-  scalemenu->menuAction()->setChecked(false);
-  scalemenu->menuAction()->setChecked(false);
-  scalemenu->menuAction()->setChecked(false);
-  scalemenu->menuAction()->setChecked(true);
+  ViewUSAction->setChecked(false);
+  ViewUSaAction->setChecked(false);
+  ViewGermanAction->setChecked(false);
+  ViewGermanaAction->setChecked(true);
 }
 
 int main(int argc, char *argv[])
 {
-  QApplication a(argc,argv);
+  QApplication app(argc,argv);
+  QTranslator qtTranslator;
+  qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+  app.installTranslator(&qtTranslator);
+
+  QTranslator myappTranslator;
+  if (myappTranslator.load("qtguitune_" + QLocale::system().name().toLower()))
+    {
+      app.installTranslator(&myappTranslator);
+    }
+  else
+    {
+      std::cerr << QT_TRANSLATE_NOOP("main","failed to load translation file ") << "qtguitune" << qPrintable(QLocale::system().name().toLower()) << "." << std::endl;
+    }
+
   MainWindow mainwin(0, "MainWin", argc, argv);
   
   mainwin.resize(500,281);
   mainwin.show();
   mainwin.resize(500,280);
   
-  return (a.exec());
+  return (app.exec());
 }

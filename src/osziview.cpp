@@ -47,7 +47,6 @@ void OsziView::paintSample(void)
   QPainter paint(this);
   
   setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
-  qDebug() << "OsziView: paintEvent1 - begin";
   
   paint.eraseRect(xscr, yscr, wscr + 1, hscr + 1);
   paint.setPen(Qt::gray);
@@ -63,8 +62,6 @@ void OsziView::paintSample(void)
   }
 
   paint.end();
-  
-  qDebug() << "OsziView: paintEvent1 - end";
 }
 
 double OsziView::getfreq(void)
@@ -85,16 +82,12 @@ double OsziView::getfreq(void)
   
   freq = (double)tc / (double)endpoint;
   
-  qDebug() << "OsziView: paintEvent2 - begin";
-  
   QPainter paint(this);
   
   paint.setPen(qRgb(200,0,0));
   paint.drawLine(xscr + endpoint * wscr / sampnr, yscr,
 		 xscr + endpoint * wscr / sampnr, yscr + hscr);
   paint.end();
-  
-  qDebug() << "OsziView: paintEvent2 - end";
   
   return (freq);
 }
@@ -138,8 +131,6 @@ double OsziView::getfreq2(void)
   
   if (freq<1e-15) freq = 1e-15;
   
-  qDebug() << "OsziView: paintEvent3 - begin";
-  
   QPainter paint(this);
   
   paint.setPen(qRgb(200,0,0));
@@ -153,8 +144,6 @@ double OsziView::getfreq2(void)
   paint.drawLine(xscr, yscr + t2 * hscr / 256, xscr + wscr, yscr + t2 * hscr / 256);
   
   paint.end();
-  
-  qDebug() << "OsziView: paintEvent3 - begin";
   
   return (freq);
 }
@@ -197,10 +186,8 @@ void OsziView::drawScale(void)
   
   setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
   
-  qDebug() << "OsziView: paintEvent4 - begin";
-
-  QRect r(rect()); //YC
-  paint.eraseRect(r); //YC
+  //QRect r(rect()); //YC
+  //paint.eraseRect(r); //YC
   
   di = (double)sampnr / sampfreq / 10.0;
   
@@ -244,19 +231,14 @@ void OsziView::drawScale(void)
   }
   
   paint.end();
-  qDebug() << "OsziView: paintEvent4 - end";
 }
 
 void OsziView::paintEvent(QPaintEvent *)
 {
-  qDebug() << "OsziView: paintEvent - begin";
   //YC erase();
   drawScale();
   
   update();
-  
-  qDebug() << "OsziView: paintEvent - end";
-
 }
 
 void OsziView::resizeEvent(QResizeEvent *)

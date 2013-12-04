@@ -37,15 +37,26 @@ class MainWindow : public QMainWindow
   QMenu *optmenu;
   QMenu *tuningmenu;
   QMenu *scalemenu;
+  
+  QAction* FileExitAction;
+  QAction* TuningNormalAction;
+  QAction* TuningWienAction;
+  QAction* TuningPhysicalAction;
+  QAction* TuningEquidistantAction;
+  QAction* TuningNaturalAction;
+  QAction* ViewUSAction;
+  QAction* ViewUSaAction;
+  QAction* ViewGermanAction;
+  QAction* ViewGermanaAction;
     
-  private slots:
-    void m_tuning_norm();
-    void m_tuning_wien();
-    void m_tuning_phys();
-    void m_tuning_equi();
-    void m_tuning_nat();
-    void m_scale_US();
-    void m_scale_USa();
-    void m_scale_GE();
-    void m_scale_GEa();
+ private slots:
+  void m_tuning_norm();
+  void m_tuning_wien();
+  void m_tuning_phys();
+  void m_tuning_equi();
+  void m_tuning_nat();
+  void m_scale_US();
+  void m_scale_USa();
+  void m_scale_GE();
+  void m_scale_GEa();
 };
