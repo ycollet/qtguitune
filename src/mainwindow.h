@@ -28,9 +28,6 @@ class MainWindow : public QMainWindow
   MainWindow(QWidget *parent, QString name, int argc, char **argv);
   ~MainWindow();
   
- protected:
-  void resizeEvent(QResizeEvent *);
-
  private:
   MainWidget *mw;
   QMenu *filemenu;

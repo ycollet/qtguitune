@@ -69,10 +69,6 @@ class MainWidget : public QWidget
   void signalSampNrChanged();
   void signalTriggerChanged();
 
- protected:
-  void paintEvent(QPaintEvent *);
-  void resizeEvent(QResizeEvent *);
-
  private:
   OsziView   *oszi;
   LogView    *logview;
@@ -92,7 +88,7 @@ class MainWidget : public QWidget
   double freqs[12];
   double lfreqs[12];
   int    processing_audio;
-  char   dsp_devicename[100];
+  QString dsp_devicename;
 
  private slots:
   void proc_audio();

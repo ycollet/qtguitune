@@ -23,150 +23,6 @@
 
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent, QString name, int argc, char **argv) : QMainWindow(parent)
-{
-  mw = new MainWidget(this, argc, argv);
-  setCentralWidget(mw);
-  mw->setMinimumSize(380,240);
-  setWindowTitle(name);
-
-  FileExitAction = new QAction(tr("E&xit"), parent);
-  connect(FileExitAction, SIGNAL(triggered()), this, SLOT(close()));
-  filemenu = menuBar()->addMenu(tr("&File"));
-  filemenu->addAction(FileExitAction);
-    
-  optmenu    = menuBar()->addMenu(tr("&Options"));
-  tuningmenu = optmenu->addMenu(tr("&Tuning"));
-  scalemenu  = optmenu->addMenu(tr("&Note Scale"));
-
-  TuningNormalAction      = new QAction(tr("&Normal"), parent);
-  TuningWienAction        = new QAction(tr("&Wien"), parent);
-  TuningPhysicalAction    = new QAction(tr("&Physical"), parent);
-  TuningEquidistantAction = new QAction(tr("&Equidistant"), parent);
-  TuningNaturalAction     = new QAction(tr("N&atural"), parent);
-  TuningNormalAction->setCheckable(true);
-  TuningWienAction->setCheckable(true);
-  TuningPhysicalAction->setCheckable(true);
-  TuningEquidistantAction->setCheckable(true);
-  TuningNaturalAction->setCheckable(true);
-  connect(TuningNormalAction,      SIGNAL(triggered()), this, SLOT(m_tuning_norm()));
-  connect(TuningWienAction,        SIGNAL(triggered()), this, SLOT(m_tuning_wien()));
-  connect(TuningPhysicalAction,    SIGNAL(triggered()), this, SLOT(m_tuning_phys()));
-  connect(TuningEquidistantAction, SIGNAL(triggered()), this, SLOT(m_tuning_equi()));
-  connect(TuningNaturalAction,     SIGNAL(triggered()), this, SLOT(m_tuning_nat()));
-  TuningNormalAction->setChecked(true);
-  TuningEquidistantAction->setChecked(true);
-  
-  tuningmenu->addAction(TuningNormalAction);
-  tuningmenu->addAction(TuningWienAction);
-  tuningmenu->addAction(TuningPhysicalAction);
-  tuningmenu->addSeparator();
-  tuningmenu->addAction(TuningEquidistantAction);
-  tuningmenu->addAction(TuningNaturalAction);
-
-  ViewUSAction      = new QAction(tr("&US"), parent);
-  ViewUSaAction     = new QAction(tr("U&S-Alternate"), parent);
-  ViewGermanAction  = new QAction(tr("&German"), parent);
-  ViewGermanaAction = new QAction(tr("G&erman-Alt."), parent);
-  ViewUSAction->setCheckable(true);
-  ViewUSaAction->setCheckable(true);
-  ViewGermanAction->setCheckable(true);
-  ViewGermanaAction->setCheckable(true);
-  connect(ViewUSAction,      SIGNAL(triggered()), this, SLOT(m_scale_US()));
-  connect(ViewUSaAction,     SIGNAL(triggered()), this, SLOT(m_scale_USa()));
-  connect(ViewGermanAction,  SIGNAL(triggered()), this, SLOT(m_scale_GE()));
-  connect(ViewGermanaAction, SIGNAL(triggered()), this, SLOT(m_scale_GEa()));
-  ViewUSAction->setChecked(true);
-  
-  scalemenu->addAction(ViewUSAction);
-  scalemenu->addAction(ViewUSaAction);
-  scalemenu->addAction(ViewGermanAction);
-  scalemenu->addAction(ViewGermanaAction);
-}
-
-MainWindow::~MainWindow()
-{
-}
-
-void MainWindow::resizeEvent(QResizeEvent *)
-{
-  centralWidget()->resize(width(), height() - menuBar()->height());
-}
-
-void MainWindow::m_tuning_norm()
-{
-  mw->setTuningNorm();
-  TuningNormalAction->setChecked(true);
-  TuningWienAction->setChecked(false);
-  TuningPhysicalAction->setChecked(false);
-}
-
-void MainWindow::m_tuning_wien()
-{
-  mw->setTuningWien();
-  TuningNormalAction->setChecked(false);
-  TuningWienAction->setChecked(true);
-  TuningPhysicalAction->setChecked(false);
-}
-
-void MainWindow::m_tuning_phys()
-{
-  mw->setTuningPhys();
-  TuningNormalAction->setChecked(false);
-  TuningWienAction->setChecked(false);
-  TuningPhysicalAction->setChecked(true);
-}
-
-void MainWindow::m_tuning_equi()
-{
-  mw->setTuningEqui();
-  TuningEquidistantAction->setChecked(true);
-  TuningNaturalAction->setChecked(false);
-}
-
-void MainWindow::m_tuning_nat()
-{
-  mw->setTuningNat();
-  TuningEquidistantAction->setChecked(false);
-  TuningNaturalAction->setChecked(true);
-}
-
-void MainWindow::m_scale_US()
-{
-  mw->setScaleUS();
-  ViewUSAction->setChecked(true);
-  ViewUSaAction->setChecked(false);
-  ViewGermanAction->setChecked(false);
-  ViewGermanaAction->setChecked(false);
-}
-
-void MainWindow::m_scale_USa()
-{
-  mw->setScaleUSAlt();
-  ViewUSAction->setChecked(false);
-  ViewUSaAction->setChecked(true);
-  ViewGermanAction->setChecked(false);
-  ViewGermanaAction->setChecked(false);
-}
-
-void MainWindow::m_scale_GE()
-{
-  mw->setScaleGE();
-  ViewUSAction->setChecked(false);
-  ViewUSaAction->setChecked(false);
-  ViewGermanAction->setChecked(true);
-  ViewGermanaAction->setChecked(false);
-}
-
-void MainWindow::m_scale_GEa()
-{
-  mw->setScaleGEAlt();
-  ViewUSAction->setChecked(false);
-  ViewUSaAction->setChecked(false);
-  ViewGermanAction->setChecked(false);
-  ViewGermanaAction->setChecked(true);
-}
-
 int main(int argc, char *argv[])
 {
   QApplication app(argc,argv);
@@ -184,11 +40,10 @@ int main(int argc, char *argv[])
       std::cerr << QT_TRANSLATE_NOOP("main","failed to load translation file ") << "qtguitune" << qPrintable(QLocale::system().name().toLower()) << "." << std::endl;
     }
 
-  MainWindow mainwin(0, "MainWin", argc, argv);
+  MainWindow* mainwin = new MainWindow(NULL, "QtGuiTune", argc, argv);
   
-  mainwin.resize(500,281);
-  mainwin.show();
-  mainwin.resize(500,280);
+  mainwin->resize(500,280);
+  mainwin->show();
   
   return (app.exec());
 }

@@ -39,6 +39,9 @@
 #include "guitune.h"
 #include "resources.h"
 
+#define TIMER_TIME 1000
+#define NO_TRIG_LIMIT 10
+
 //globally
 double KAMMERTON, KAMMERTON_LOG;
 
@@ -47,6 +50,135 @@ int close_unistd(int fd)
   return (close(fd));
 }
 // unistd - close is not visible to widget because of own close function
+
+MainWidget::MainWidget(QWidget *parent, int argc, char **argv) : QWidget(parent)
+{
+  KAMMERTON     = KAMMERTON_NORM;
+  KAMMERTON_LOG = KAMMERTON_LOG_NORM;
+
+  dsp_devicename = QString("/dev/dsp");
+
+  sampnr = 1024;
+  sampfreq = 11048;
+  processing_audio = 0;
+  audio = init_audio();
+  
+  std::cout << qPrintable(tr("Audiodriver initialized")) << std::endl;
+
+  freqs[0]  = KAMMERTON;
+  lfreqs[0] = KAMMERTON_LOG;
+  
+  for(int i=1;i<12;i++) {
+    freqs [i] = freqs [i-1] * D_NOTE;
+    lfreqs[i] = lfreqs[i-1] + D_NOTE_LOG;
+  }
+  
+  oszi = new OsziView(parent);
+  oszi->setSampleNr(sampnr);
+  oszi->setSampleFreq(sampfreq_exact);
+  
+  logview = new LogView(parent);
+  logview->setFrameStyle(QFrame::Box | QFrame::Sunken);
+  logview->setLineWidth(2);
+  
+  freqview = new QLCDNumber(parent);
+  freqview->setNumDigits(9);
+  freqview->setFrameStyle(QFrame::NoFrame);
+  freqview->setSegmentStyle(QLCDNumber::Filled);
+  QLabel* freqviewLabel = new QLabel(tr("Freq.:"), parent);
+  freqviewLabel->setBuddy(freqview);
+  QHBoxLayout* freqviewLayout = new QHBoxLayout(this);
+  QWidget* freqviewWidget = new QWidget(parent);
+  freqviewLayout->addWidget(freqviewLabel);
+  freqviewLayout->addWidget(freqview);
+  freqviewWidget->setLayout(freqviewLayout);
+  
+  nfreqview = new QLCDNumber(parent);
+  nfreqview->setNumDigits(9);
+  nfreqview->setFrameStyle(QFrame::NoFrame);
+  nfreqview->setSegmentStyle(QLCDNumber::Filled);
+  QLabel* nfreqviewLabel = new QLabel(tr("Note:"), parent);
+  nfreqviewLabel->setBuddy(nfreqview);
+  QHBoxLayout* nfreqviewLayout = new QHBoxLayout(this);
+  QWidget* nfreqviewWidget = new QWidget(parent);
+  nfreqviewLayout->addWidget(nfreqviewLabel);
+  nfreqviewLayout->addWidget(nfreqview);
+  nfreqviewWidget->setLayout(nfreqviewLayout);
+  
+  sampfreq_input = new QSpinBox();
+  sampfreq_input->setMinimum(1000);
+  sampfreq_input->setMaximum(48000);
+  sampfreq_input->setSingleStep(50);
+  sampfreq_input->setValue(sampfreq);
+  QLabel* sampfreq_inputLabel = new QLabel(tr("Sample Freq.:"), parent);
+  sampfreq_inputLabel->setBuddy(sampfreq_input);
+  QHBoxLayout* sampfreq_inputLayout = new QHBoxLayout(this);
+  QWidget* sampfreq_inputWidget = new QWidget(parent);
+  sampfreq_inputLayout->addWidget(sampfreq_inputLabel);
+  sampfreq_inputLayout->addWidget(sampfreq_input);
+  sampfreq_inputWidget->setLayout(sampfreq_inputLayout);
+  
+  connect(sampfreq_input, SIGNAL(valueChanged(int)), this, SLOT(setSampFreq(int)));
+  
+  sampnr_input = new QSpinBox();
+  sampnr_input->setMinimum(32);
+  sampnr_input->setMaximum(11048);
+  sampnr_input->setSingleStep(32);
+  sampnr_input->setValue(sampnr);
+  QLabel* sampnr_inputLabel = new QLabel(tr("Sample #:"), parent);
+  sampnr_inputLabel->setBuddy(sampnr_input);
+  QHBoxLayout* sampnr_inputLayout = new QHBoxLayout(this);
+  QWidget* sampnr_inputWidget = new QWidget(parent);
+  sampnr_inputLayout->addWidget(sampnr_inputLabel);
+  sampnr_inputLayout->addWidget(sampnr_input);
+  sampnr_inputWidget->setLayout(sampnr_inputLayout);
+  
+  connect(sampnr_input, SIGNAL(valueChanged(int)), this, SLOT(setSampNr(int)));
+  
+  trigger_input = new QSpinBox();
+  trigger_input->setMinimum(0);
+  trigger_input->setMaximum(100);
+  trigger_input->setSingleStep(10);
+  trigger_input->setValue((int)(getTrigger()*100.0+0.5));
+  QLabel* trigger_inputLabel = new QLabel(tr("Trig. (% of max):"), parent);
+  trigger_inputLabel->setBuddy(trigger_input);
+  QHBoxLayout* trigger_inputLayout = new QHBoxLayout(this);
+  QWidget* trigger_inputWidget = new QWidget(parent);
+  trigger_inputLayout->addWidget(trigger_inputLabel);
+  trigger_inputLayout->addWidget(trigger_input);
+  trigger_inputWidget->setLayout(trigger_inputLayout);
+  
+  connect(trigger_input, SIGNAL(valueChanged(int)), this, SLOT(setTriggerPercent(int)));
+  
+  QVBoxLayout* infoLayout = new QVBoxLayout(this);
+  QWidget* infoWidget = new QWidget(parent);
+  infoLayout->addWidget(freqviewWidget);
+  infoLayout->addWidget(nfreqviewWidget);
+  infoLayout->addWidget(sampfreq_inputWidget);
+  infoLayout->addWidget(sampnr_inputWidget);
+  infoLayout->addWidget(trigger_inputWidget);
+  infoWidget->setLayout(infoLayout);
+
+  QHBoxLayout* guiupperLayout = new QHBoxLayout(this);
+  QWidget* guiupperWidget = new QWidget(parent);
+  guiupperLayout->addWidget(oszi);
+  guiupperLayout->addWidget(infoWidget);
+  guiupperWidget->setLayout(guiupperLayout);
+
+  QVBoxLayout* mainLayout = new QVBoxLayout(this);
+  mainLayout->addWidget(guiupperWidget);
+  mainLayout->addWidget(logview);
+  
+  // 'this' is the main widget
+  this->setLayout(mainLayout);
+  
+  timer = new QTimer(this);
+  timer->setInterval(TIMER_TIME);
+  
+  connect(timer, SIGNAL(timeout()), this, SLOT(proc_audio()));
+  
+  timer->start(TIMER_TIME);
+}
 
 void MainWidget::setTuningNorm()
 {
@@ -132,7 +264,7 @@ void MainWidget::setSampFreq(int f)
   timer->stop();
   close_unistd(audio);
   audio = init_audio();
-  timer->start(0);
+  timer->start(TIMER_TIME);
   oszi->setSampleFreq(sampfreq_exact);
   
   emit signalSampFreqChanged();
@@ -165,28 +297,28 @@ void MainWidget::setDSPName(const char *name)
 {
   timer->stop();
   close_unistd(audio);
-  strcpy(dsp_devicename,name);
+  dsp_devicename = QString(name);
   audio = init_audio();
-  timer->start(0);
+  timer->start(TIMER_TIME);
 }
 
 int MainWidget::init_audio()
 {
-  std::cout << qPrintable(tr("initializing audio at ")) << dsp_devicename << std::endl;
+  std::cout << qPrintable(tr("initializing audio at ")) << qPrintable(dsp_devicename) << std::endl;
 
-  audio = open(dsp_devicename, O_RDONLY);
+  audio = open(dsp_devicename.toStdString().c_str(), O_RDONLY);
   if (audio == -1) {
-    perror(dsp_devicename);
+    perror(dsp_devicename.toStdString().c_str());
     exit(1);
   }
   fcntl(audio,F_SETFD,FD_CLOEXEC);
 
-  if (strcmp(dsp_devicename,"/dev/stdin")==0) {
+  if (dsp_devicename ==  QString("/dev/stdin")) {
     std::cout << qPrintable(tr("reading data from stdin")) << std::endl;
     blksize = 32;
     std::cout << "  blocksize = " << blksize  << std::endl;
     std::cout << "  sampfreq  = " << sampfreq << std::endl;
-    sampfreq_exact=sampfreq;
+    sampfreq_exact = sampfreq;
 
   } else {
     ioctl(audio, SNDCTL_DSP_SETDUPLEX, 0);
@@ -225,77 +357,6 @@ int MainWidget::init_audio()
   return(audio);
 }
 
-MainWidget::MainWidget(QWidget *parent, int argc, char **argv) : QWidget(parent)
-{
-  KAMMERTON     = KAMMERTON_NORM;
-  KAMMERTON_LOG = KAMMERTON_LOG_NORM;
-
-  strcpy(dsp_devicename,"/dev/dsp");
-
-  sampnr = 1024;
-  sampfreq = 11048;
-  processing_audio = 0;
-  audio = init_audio();
-  
-  std::cout << qPrintable(tr("Audiodriver initialized")) << std::endl;
-
-  freqs[0]  = KAMMERTON;
-  lfreqs[0] = KAMMERTON_LOG;
-  
-  for(int i=1;i<12;i++) {
-    freqs [i] = freqs [i-1] * D_NOTE;
-    lfreqs[i] = lfreqs[i-1] + D_NOTE_LOG;
-  }
-  
-  oszi = new OsziView(this);
-  oszi->setSampleNr(sampnr);
-  oszi->setSampleFreq(sampfreq_exact);
-  
-  logview = new LogView(this);
-  logview->setFrameStyle(QFrame::Box | QFrame::Sunken);
-  logview->setLineWidth(2);
-  
-  freqview = new QLCDNumber(parent);
-  freqview->setNumDigits(9);
-  freqview->setFrameStyle(QFrame::NoFrame);
-  freqview->setSegmentStyle(QLCDNumber::Filled);
-  
-  nfreqview = new QLCDNumber(parent);
-  nfreqview->setNumDigits(9);
-  nfreqview->setFrameStyle(QFrame::NoFrame);
-  nfreqview->setSegmentStyle(QLCDNumber::Filled);
-  
-  sampfreq_input = new QSpinBox();
-  sampfreq_input->setMinimum(1000);
-  sampfreq_input->setMaximum(48000);
-  sampfreq_input->setSingleStep(50);
-  sampfreq_input->setValue(sampfreq);
-  
-  connect(sampfreq_input, SIGNAL(valueChanged(int)), this, SLOT(setSampFreq(int)));
-  
-  sampnr_input = new QSpinBox();
-  sampnr_input->setMinimum(32);
-  sampnr_input->setMaximum(11048);
-  sampnr_input->setSingleStep(32);
-  sampnr_input->setValue(sampnr);
-  
-  connect(sampnr_input, SIGNAL(valueChanged(int)), this, SLOT(setSampNr(int)));
-  
-  trigger_input = new QSpinBox();
-  trigger_input->setMinimum(0);
-  trigger_input->setMaximum(100);
-  trigger_input->setSingleStep(10);
-  trigger_input->setValue((int)(getTrigger()*100.0+0.5));
-  
-  connect(trigger_input, SIGNAL(valueChanged(int)), this, SLOT(setTriggerPercent(int)));
-  
-  timer = new QTimer(this);
-  
-  connect(timer, SIGNAL(timeout()), this, SLOT(proc_audio()));
-  
-  timer->start(0);
-}
-
 void MainWidget::proc_audio()
 {
   int i,j,n,trig,trigpos;
@@ -303,7 +364,7 @@ void MainWidget::proc_audio()
   unsigned char *c = NULL;
   double ldf,mldf;
   char str[50];
-  
+ 
   processing_audio = 1;
   trigpos = 0;
   c = sample;
@@ -313,6 +374,7 @@ void MainWidget::proc_audio()
 
   j = 0;
   trig = 0;
+  
   if (i<n) do {
       for( ; i<n-1; i++)   /* n-1 because of POSTRIG uses i+1 */
 	if (POSTRIG(c,i)) {
@@ -324,7 +386,7 @@ void MainWidget::proc_audio()
 	j++;
 	i=0;
       }
-    } while((!trig) && j<100);
+    } while((!trig) && j<NO_TRIG_LIMIT);
 
   if (trig) {
     for(i=n-trigpos; i<sampnr; i+=n) {
@@ -361,85 +423,9 @@ void MainWidget::proc_audio()
     sprintf(str,"%.3f",nfreq_0t);
     nfreqview->display(str);
   }
+  
   k++;
   processing_audio = 0;
-}
-
-void MainWidget::paintEvent(QPaintEvent *)
-{
-  QPainter p(this);
-  
-  p.setFont(QFont("System",8));
-  
-  p.setPen(Qt::black);
-  p.drawText(freqview->x() - p.fontMetrics().width(tr("Freq.:")) - 5 + 1,
-	     freqview->y() + p.fontMetrics().ascent() + 1 + p.fontMetrics().height(),
-	     tr("Freq.:"));
-
-  p.setPen(Qt::white);
-  p.drawText(freqview->x() - p.fontMetrics().width(tr("Freq.:")) - 5,
-	     freqview->y() + p.fontMetrics().ascent() + p.fontMetrics().height(),
-	     tr("Freq.:"));
-
-  p.setPen(Qt::black);
-  p.drawText(nfreqview->x() - p.fontMetrics().width(tr("Note:")) - 5 + 1,
-	     nfreqview->y() + p.fontMetrics().ascent() + 1 + p.fontMetrics().height(),
-	     tr("Note:"));
-  
-  p.setPen(Qt::white);
-  p.drawText(nfreqview->x() - p.fontMetrics().width(tr("Note:")) - 5,
-	     nfreqview->y() + p.fontMetrics().ascent() + p.fontMetrics().height(),
-	     tr("Note:"));
-
-  p.setPen(Qt::black);
-  p.drawText(sampfreq_input->x() - p.fontMetrics().width(tr("Sample Freq.:")) - 5 + 1,
-	     sampfreq_input->y() + p.fontMetrics().ascent() + 1 + p.fontMetrics().height() - 3,
-	     tr("Sample Freq.:"));
-  
-  p.setPen(Qt::white);
-  p.drawText(sampfreq_input->x() - p.fontMetrics().width(tr("Sample Freq.:")) - 5,
-  	     sampfreq_input->y() + p.fontMetrics().ascent() + p.fontMetrics().height() - 3,
-	     tr("Sample Freq.:"));
-
-  p.setPen(Qt::black);
-  p.drawText(sampnr_input->x() - p.fontMetrics().width(tr("Sample #:")) - 5 + 1,
-	     sampnr_input->y() + p.fontMetrics().ascent() + 1 + p.fontMetrics().height() - 3,
-	     tr("Sample #:"));
-  
-  p.setPen(Qt::white);
-  p.drawText(sampnr_input->x() - p.fontMetrics().width(tr("Sample #:")) - 5,
-	     sampnr_input->y() + p.fontMetrics().ascent() + p.fontMetrics().height() - 3,
-	     tr("Sample #:"));
-
-  p.setPen(Qt::black);
-  p.drawText(trigger_input->x() - p.fontMetrics().width(tr("Trig.(% of max):")) - 5 + 1,
-	     trigger_input->y() + p.fontMetrics().ascent() + 1 + p.fontMetrics().height() - 3,
-	     tr("Trig.(% of max):"));
-  
-  p.setPen(Qt::white);
-  p.drawText(trigger_input->x() - p.fontMetrics().width(tr("Trig.(% of max):")) - 5,
-	     trigger_input->y() + p.fontMetrics().ascent() + p.fontMetrics().height() - 3,
-	     tr("Trig.(% of max):"));
-  
-  p.end();
-  update();  
-}
-
-void MainWidget::resizeEvent(QResizeEvent *)
-{
-  int fwidth = 150;
-
-  oszi->setGeometry(0, 0, width() - fwidth, height() - 100);
-  logview->setGeometry(0, (oszi->isVisible())?oszi->height():0, width(), 100);
-  freqview->setGeometry(width() - fwidth + 40, 3, 100, 25);
-  nfreqview->setGeometry(width() - fwidth + 40, 35, 100, 25);
-  sampfreq_input->setGeometry(width() - 80, 65, 70, 20);
-  sampnr_input->setGeometry(sampfreq_input->x(),
-			    sampfreq_input->y() + sampfreq_input->height() + 5,
-			    70,20);
-  trigger_input->setGeometry(sampnr_input->x() + 20,
-			     sampnr_input->y() + sampnr_input->height() + 5,
-			     50,20);
 }
 
 MainWidget::~MainWidget()
