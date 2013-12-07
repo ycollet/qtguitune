@@ -1,3 +1,6 @@
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
 //
 //    guitune - program for tuning instruments (actually an oscilloscope)
 //    Copyright (C) 1999  Florian Berger
@@ -19,7 +22,7 @@
 
 #include <QtGui>
 
-#include "guitune.h"
+class GuiTune;
 
 class MainWindow : public QMainWindow
 {
@@ -29,11 +32,11 @@ class MainWindow : public QMainWindow
   ~MainWindow();
   
  private:
-  MainWidget *mw;
-  QMenu *filemenu;
-  QMenu *optmenu;
-  QMenu *tuningmenu;
-  QMenu *scalemenu;
+  GuiTune* mw;
+  QMenu* filemenu;
+  QMenu* optmenu;
+  QMenu* tuningmenu;
+  QMenu* scalemenu;
   
   QAction* FileExitAction;
   QAction* TuningNormalAction;
@@ -57,3 +60,4 @@ class MainWindow : public QMainWindow
   void m_scale_GE();
   void m_scale_GEa();
 };
+#endif

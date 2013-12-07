@@ -1,3 +1,6 @@
+#ifndef LOGVIEW_H
+#define LOGVIEW_H
+
 //
 //    guitune - program for tuning instruments (actually an oscilloscope)
 //    Copyright (C) 1999  Florian Berger
@@ -23,8 +26,6 @@ extern double KAMMERTON, KAMMERTON_LOG;
 
 class LogView : public QFrame
 {
-  //    Q_OBJECT
-
  public:
   LogView(QWidget *parent);
   ~LogView();
@@ -52,3 +53,4 @@ class LogView : public QFrame
   double lfreqs[12];
   QColor arrow_bgcol;
 };
+#endif

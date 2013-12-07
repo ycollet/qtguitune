@@ -1,3 +1,6 @@
+#ifndef GUITUNE_H
+#define GUITUNE_H
+
 //
 //    guitune - program for tuning instruments (actually an oscilloscope)
 //    Copyright (C) 1999  Florian Berger
@@ -21,27 +24,14 @@
 
 class OsziView;
 class LogView;
+class AudioOSS;
 
-class MainWidget : public QWidget
+class GuiTune : public QWidget
 {
  Q_OBJECT
  public:
-  MainWidget(QWidget *parent, int argc, char **argv);
-  ~MainWidget();
-  int    init_audio();
-  int    sampnr;
-  int    sampfreq;
-  double sampfreq_exact;
-  int    blksize;
-  int    audio;
-  int    trig1;
-  int    trig2;
-  int    note_0t;
-  int    note_ht;
-  double freq_0t;
-  double freq_ht;
-  double lfreq_0t;
-  double lfreq_ht;
+  GuiTune(QWidget *parent, int argc, char **argv);
+  ~GuiTune();
   void   setTuningNorm();
   void   setTuningWien();
   void   setTuningPhys();
@@ -56,13 +46,17 @@ class MainWidget : public QWidget
   void   showLogView();
   void   hideLogView();
   double getTrigger();
-  
+  OsziView   *getOsziPtr();
+  LogView    *getLogviewPtr();
+  QLCDNumber *getFreqviewPtr();
+  QLCDNumber *GetNFreqviewPtr();
+
  public slots:
-  void setSampFreq(int f);
-  void setSampNr(int nr);
+  void setSampleFreq(int f);
+  void setSampleNr(int nr);
   void setTrigger(double trig);
   void setTriggerPercent(int trig);
-  void setDSPName(const char* name);
+  void setDSPName(QString name);
 
  signals:
   void signalSampFreqChanged();
@@ -74,7 +68,6 @@ class MainWidget : public QWidget
   LogView    *logview;
   QLCDNumber *freqview;
   QLCDNumber *nfreqview;
-  QTimer     *timer;
   QMenuBar   *menu;
   QMenu      *filemenu;
   QMenu      *optmenu;
@@ -82,14 +75,6 @@ class MainWidget : public QWidget
   QSpinBox   *sampfreq_input;
   QSpinBox   *sampnr_input;
   QSpinBox   *trigger_input;
-  //   FreqView *freqview;
-  int    oszi_height;
-  unsigned char sample[64000];
-  double freqs[12];
-  double lfreqs[12];
-  int    processing_audio;
-  QString dsp_devicename;
-
- private slots:
-  void proc_audio();
+  AudioOSS   *audio;
 };
+#endif

@@ -22,10 +22,11 @@
 #include <QtGui>
 
 #include "mainwindow.h"
+#include "guitune.h"
 
 MainWindow::MainWindow(QWidget *parent, QString name, int argc, char **argv) : QMainWindow(parent)
 {
-  mw = new MainWidget(this, argc, argv);
+  mw = new GuiTune(this, argc, argv);
   mw->setMinimumSize(380,240);
   
   setCentralWidget(mw);
@@ -52,6 +53,10 @@ MainWindow::MainWindow(QWidget *parent, QString name, int argc, char **argv) : Q
   TuningEquidistantAction->setCheckable(true);
   TuningNaturalAction->setCheckable(true);
   
+  mw->setTuningNorm();
+  TuningNormalAction->setChecked(true);
+  TuningEquidistantAction->setChecked(true);
+
   connect(TuningNormalAction,      SIGNAL(triggered()), this, SLOT(m_tuning_norm()));
   connect(TuningWienAction,        SIGNAL(triggered()), this, SLOT(m_tuning_wien()));
   connect(TuningPhysicalAction,    SIGNAL(triggered()), this, SLOT(m_tuning_phys()));
@@ -79,6 +84,9 @@ MainWindow::MainWindow(QWidget *parent, QString name, int argc, char **argv) : Q
   connect(ViewUSaAction,     SIGNAL(triggered()), this, SLOT(m_scale_USa()));
   connect(ViewGermanAction,  SIGNAL(triggered()), this, SLOT(m_scale_GE()));
   connect(ViewGermanaAction, SIGNAL(triggered()), this, SLOT(m_scale_GEa()));
+  
+  mw->setScaleUS();
+  ViewUSAction->setChecked(true);
   
   scalemenu->addAction(ViewUSAction);
   scalemenu->addAction(ViewUSaAction);

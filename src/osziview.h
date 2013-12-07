@@ -1,3 +1,6 @@
+#ifndef OSZIVIEW_H
+#define OSZIVIEW_H
+
 //
 //    osziview.h
 //
@@ -19,7 +22,6 @@
 
 class OsziView : public QWidget
 {
-  // Q_OBJECT
  public:
   OsziView(QWidget *parent);
   ~OsziView();
@@ -45,3 +47,4 @@ class OsziView : public QWidget
   int    wscr, hscr, xscr, yscr;
   double trigfact;
 };
+#endif
