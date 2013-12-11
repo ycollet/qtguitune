@@ -3,6 +3,7 @@
                           --==###########==--
 
                    Copyright (C) 1999 Florian Berger
+                   Copyright (C) 2013 Yann Collette
                    
                 email: florian.berger@jk.uni-linz.ac.at
                   
@@ -28,18 +29,20 @@ What is guitune ?
    trigger levels per time, calculates the frequency and shows the
    tone on a tone-scale.
 
-   Note: the 'moc_*' files are not deleted by 'make clean'
+   program compiles for qt-4.X.X
    
-   program also compiles for qt-2.X.X
+
+Requirements
+------------
+
+jack-1.9.x
+Qt-4.7
    
-   
-   PROBLEMS:
-   
-   If you have qt-1.4X and qt-2.X.X coexisting on one system you have to 
-   take care that all links to libraries or tools
-   e.g. /usr/lib/libqt.so  or /usr/bin/moc 
-   should point to files from the same version
-   
-   Furthermore delete all moc_* files (if existing) before "make" because 
-   they differ between qt-1.4X and qt-2.X.X
-   
+Installation
+------------
+
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=/opt/qtguitune -DCMAKE_BUILD_TYPE=RELEASE ..
+make
+sudo make install
