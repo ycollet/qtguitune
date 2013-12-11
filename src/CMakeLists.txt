@@ -22,6 +22,7 @@ option(UPDATE_TRANSLATIONS "Update source translation translations/*.ts files (W
 set(QTGUITUNE_SRCS main.cpp)
 
 set(QTGUITUNE_UI_SRCS ./guitune.cpp
+                      ./audio_base.cpp
                       ./audio_oss.cpp
                       ./mainwindow.cpp
                       ./osziview.cpp

@@ -49,7 +49,7 @@ int close_unistd(int fd)
 }
 // unistd - close is not visible to widget because of own close function
 
-AudioOSS::AudioOSS() : mw(NULL), dsp_devicename(QString("/dev/dsp")), audio(0)
+AudioOSS::AudioOSS() : AudioBase(), audio(0)
 {
   freqs[0]  = KAMMERTON;
   lfreqs[0] = KAMMERTON_LOG;
@@ -70,11 +70,6 @@ void AudioOSS::setDSPName(QString name)
   close_unistd(audio);
   dsp_devicename = QString(name);
   audio = init_audio();
-}
-
-void AudioOSS::setGuiPtr(GuiTune* _mw)
-{
-  mw = _mw;
 }
 
 int AudioOSS::init_audio()
@@ -210,24 +205,3 @@ void AudioOSS::setSampleNr(int nr)
   sampnr = nr;
 }
 
-void AudioOSS::run()
-{
-  proc_audio();
-}
-
-void AudioOSS::update_lfreq()
-{
-  char str[50];
-  
-  mw->getLogviewPtr()->change_lfreq(lfreq_0t);
-  sprintf(str,"%.3f",freq_0t);
-  mw->getFreqviewPtr()->display(str);
-}
-
-void AudioOSS::update_nfreq(double _nfreq_0t)
-{
-  char str[50];
-  
-  sprintf(str, "%.3f", _nfreq_0t);
-  mw->GetNFreqviewPtr()->display(str);
-}

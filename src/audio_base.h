@@ -1,5 +1,5 @@
-#ifndef AUDIO_OSS_H
-#define AUDIO_OSS_H
+#ifndef AUDIO_BASE_H
+#define AUDIO_BASE_H
 
 //
 //    guitune - program for tuning instruments (actually an oscilloscope)
@@ -23,35 +23,33 @@
 
 #include <QtGui>
 
-#include "audio_base.h"
+class GuiTune;
 
 #define TIMER_TIME 1000
 #define NO_TRIG_LIMIT 10
 
-class AudioOSS : public AudioBase
+class AudioBase : public QThread
 {
  public:
-  AudioOSS();
-  virtual ~AudioOSS();
-  virtual int init_audio();
-  virtual void setDSPName(QString);
-  virtual void setSampleFreq(int);
-  virtual void proc_audio();
-  void setSampleNr(int);
+  AudioBase();
+  virtual ~AudioBase();
+  virtual int init_audio() = 0;
+  virtual void setDSPName(QString) = 0;
+  virtual void setSampleFreq(int) = 0;
+  virtual void proc_audio() = 0;
+  void setGuiPtr(GuiTune *);
+  void update_lfreq();
+  void update_nfreq(double);
   
- private:
-  int     audio;
-  int     blksize;
-  int     sampfreq;
-  double  sampfreq_exact;
-  double  freqs[12];
-  double  lfreqs[12];
-  int     processing_audio;
-  int     trig1;
-  int     trig2;
-  int     note_0t;
-  int     note_ht;
-  double  freq_ht;
-  double  lfreq_ht;
+ protected:
+  virtual void run();
+  
+ public:
+  GuiTune* mw;
+  QString dsp_devicename;
+  int     sampnr;
+  unsigned char sample[64000];
+  double  freq_0t;
+  double  lfreq_0t;
 };
 #endif

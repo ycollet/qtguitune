@@ -1,6 +1,3 @@
-#ifndef AUDIO_OSS_H
-#define AUDIO_OSS_H
-
 //
 //    guitune - program for tuning instruments (actually an oscilloscope)
 //    Copyright (C) 1999  Florian Berger
@@ -21,37 +18,60 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/soundcard.h>
+
+#include <unistd.h>
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+#include <iostream>
+
 #include <QtGui>
 
-#include "audio_base.h"
+#include "audio_oss.h"
+#include "resources.h"
+#include "guitune.h"
+#include "osziview.h"
+#include "logview.h"
 
-#define TIMER_TIME 1000
-#define NO_TRIG_LIMIT 10
-
-class AudioOSS : public AudioBase
+AudioBase::AudioBase() : mw(NULL), dsp_devicename(QString("/dev/dsp"))
 {
- public:
-  AudioOSS();
-  virtual ~AudioOSS();
-  virtual int init_audio();
-  virtual void setDSPName(QString);
-  virtual void setSampleFreq(int);
-  virtual void proc_audio();
-  void setSampleNr(int);
+}
+
+AudioBase::~AudioBase() 
+{
+}
+
+void AudioBase::setGuiPtr(GuiTune* _mw)
+{
+  mw = _mw;
+}
+
+void AudioBase::run()
+{
+  proc_audio();
+}
+
+void AudioBase::update_lfreq()
+{
+  char str[50];
   
- private:
-  int     audio;
-  int     blksize;
-  int     sampfreq;
-  double  sampfreq_exact;
-  double  freqs[12];
-  double  lfreqs[12];
-  int     processing_audio;
-  int     trig1;
-  int     trig2;
-  int     note_0t;
-  int     note_ht;
-  double  freq_ht;
-  double  lfreq_ht;
-};
-#endif
+  mw->getLogviewPtr()->change_lfreq(lfreq_0t);
+  sprintf(str,"%.3f",freq_0t);
+  mw->getFreqviewPtr()->display(str);
+}
+
+void AudioBase::update_nfreq(double _nfreq_0t)
+{
+  char str[50];
+  
+  sprintf(str, "%.3f", _nfreq_0t);
+  mw->GetNFreqviewPtr()->display(str);
+}
