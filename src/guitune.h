@@ -25,12 +25,15 @@
 
 class OsziView;
 class LogView;
-class AudioOSS;
+class AudioBase;
 
 class GuiTune : public QWidget
 {
  Q_OBJECT
+
  public:
+  enum DriverType {OSSDriver, ALSADriver};
+  
   GuiTune(QWidget *parent, int argc, char **argv);
   ~GuiTune();
   void   setTuningNorm();
@@ -42,6 +45,7 @@ class GuiTune : public QWidget
   void   setScaleUSAlt();
   void   setScaleGE();
   void   setScaleGEAlt();
+  void   setAudioDriver(DriverType);
   void   showOszi();
   void   hideOszi();
   void   showLogView();
@@ -51,6 +55,7 @@ class GuiTune : public QWidget
   LogView    *getLogviewPtr();
   QLCDNumber *getFreqviewPtr();
   QLCDNumber *GetNFreqviewPtr();
+  DriverType CurrentDriver;
 
  public slots:
   void setSampleFreq(int f);
@@ -76,6 +81,6 @@ class GuiTune : public QWidget
   QSpinBox   *sampfreq_input;
   QSpinBox   *sampnr_input;
   QSpinBox   *trigger_input;
-  AudioOSS   *audio;
+  AudioBase  *audio;
 };
 #endif

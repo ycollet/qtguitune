@@ -28,6 +28,7 @@ class GuiTune;
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
+
  public:
   MainWindow(QWidget *parent, QString name, int argc, char **argv);
   ~MainWindow();
@@ -38,6 +39,7 @@ class MainWindow : public QMainWindow
   QMenu* optmenu;
   QMenu* tuningmenu;
   QMenu* scalemenu;
+  QMenu* drivermenu;
   
   QAction* FileExitAction;
   QAction* TuningNormalAction;
@@ -49,6 +51,8 @@ class MainWindow : public QMainWindow
   QAction* ViewUSaAction;
   QAction* ViewGermanAction;
   QAction* ViewGermanaAction;
+  QAction* OSSDriverAction;
+  QAction* ALSADriverAction;
     
  private slots:
   void m_tuning_norm();
@@ -60,5 +64,7 @@ class MainWindow : public QMainWindow
   void m_scale_USa();
   void m_scale_GE();
   void m_scale_GEa();
+  void m_driver_OSS();
+  void m_driver_ALSA();
 };
 #endif

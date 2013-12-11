@@ -26,12 +26,14 @@
 #include "logview.h"
 #include "guitune.h"
 #include "resources.h"
+#include "audio_base.h"
 #include "audio_oss.h"
+#include "audio_alsa.h"
 
 //globally
 double KAMMERTON, KAMMERTON_LOG;
 
-GuiTune::GuiTune(QWidget *parent, int argc, char **argv) : QWidget(parent)
+GuiTune::GuiTune(QWidget *parent, int argc, char **argv) : QWidget(parent), audio(NULL)
 {
   int sampnr;
   double sampfreq;
@@ -42,7 +44,8 @@ GuiTune::GuiTune(QWidget *parent, int argc, char **argv) : QWidget(parent)
   sampnr = 1024;
   sampfreq = 11048;
   
-  audio = new AudioOSS();
+  CurrentDriver = OSSDriver;
+  audio = new AudioOSS(QString("/dev/dsp"));
   audio->init_audio();
   
   oszi = new OsziView(parent);
@@ -288,4 +291,22 @@ QLCDNumber* GuiTune::getFreqviewPtr()
 QLCDNumber* GuiTune::GetNFreqviewPtr()
 {
   return nfreqview;
+}
+
+void GuiTune::setAudioDriver(DriverType _dt)
+{
+  audio->quit();
+  delete audio;
+  CurrentDriver = _dt;
+  if (_dt == OSSDriver)  audio = new AudioOSS(QString("/dev/dsp"));
+  if (_dt == ALSADriver) audio = new AudioALSA(QString("hw:0,0"));
+  
+  audio->init_audio();
+  
+  //audio->setSampleFreq(sampfreq);
+  //oszi->setSampleFreq(sampfreq);
+  //audio->setSampleNr(sampnr);
+  //oszi->setSampleNr(sampnr);
+
+  audio->start();
 }

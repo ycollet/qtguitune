@@ -23,6 +23,7 @@ set(QTGUITUNE_SRCS main.cpp)
 
 set(QTGUITUNE_UI_SRCS ./guitune.cpp
                       ./audio_base.cpp
+                      ./audio_alsa.cpp
                       ./audio_oss.cpp
                       ./mainwindow.cpp
                       ./osziview.cpp
@@ -65,7 +66,7 @@ add_executable(qtguitune ${QTGUITUNE_SRCS}
 			 ${QTGUITUNE_UI_SRCS}
 			 ${QTGUITUNE_UI_HEADERS_MOC})
 
-target_link_libraries(qtguitune ${QT_LIBRARIES} ${JACK_LIBRARIES})
+target_link_libraries(qtguitune ${QT_LIBRARIES} ${JACK_LIBRARIES} ${ALSA_LIBRARY})
 
 install(TARGETS qtguitune
         DESTINATION bin)

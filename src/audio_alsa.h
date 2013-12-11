@@ -1,5 +1,5 @@
-#ifndef AUDIO_OSS_H
-#define AUDIO_OSS_H
+#ifndef AUDIO_ALSA_H
+#define AUDIO_ALSA_H
 
 //
 //    guitune - program for tuning instruments (actually an oscilloscope)
@@ -23,25 +23,30 @@
 
 #include <QtGui>
 
+#include <alsa/asoundlib.h>
+
 #include "audio_base.h"
 
 #define TIMER_TIME 1000
 #define NO_TRIG_LIMIT 10
 
-class AudioOSS : public AudioBase
+class AudioALSA : public AudioBase
 {
  public:
-  AudioOSS(QString);
-  virtual ~AudioOSS();
-  virtual int init_audio();
+  AudioALSA(QString);
+  virtual ~AudioALSA();
   virtual int close_audio();
+  virtual int init_audio();
   virtual void setDSPName(QString);
   virtual void setSampleFreq(int);
   virtual void proc_audio();
   
  private:
+  snd_pcm_t *capture_handle;
+  snd_pcm_hw_params_t *hw_params;
   int     audio;
   int     blksize;
+  int     sampfreq;
   double  sampfreq_exact;
   double  freqs[12];
   double  lfreqs[12];

@@ -94,6 +94,20 @@ MainWindow::MainWindow(QWidget *parent, QString name, int argc, char **argv) : Q
   scalemenu->addAction(ViewGermanAction);
   scalemenu->addAction(ViewGermanaAction);
   
+  drivermenu = menuBar()->addMenu(tr("&Drivers"));
+  OSSDriverAction  = new QAction(tr("&OSS"), parent);
+  ALSADriverAction = new QAction(tr("&ALSA"), parent);
+  
+  OSSDriverAction->setCheckable(true);
+  ALSADriverAction->setCheckable(true);
+  OSSDriverAction->setChecked(true);
+  
+  connect(OSSDriverAction,  SIGNAL(triggered()), this, SLOT(m_driver_OSS()));
+  connect(ALSADriverAction, SIGNAL(triggered()), this, SLOT(m_driver_ALSA()));
+  
+  drivermenu->addAction(OSSDriverAction);
+  drivermenu->addAction(ALSADriverAction);
+    
   this->adjustSize();
   this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   this->setFocusPolicy(Qt::ClickFocus);
@@ -176,4 +190,14 @@ void MainWindow::m_scale_GEa()
   ViewUSaAction->setChecked(false);
   ViewGermanAction->setChecked(false);
   ViewGermanaAction->setChecked(true);
+}
+
+void MainWindow::m_driver_OSS()
+{
+  mw->setAudioDriver(GuiTune::OSSDriver);
+}
+
+void MainWindow::m_driver_ALSA()
+{
+  mw->setAudioDriver(GuiTune::ALSADriver);
 }

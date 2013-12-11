@@ -31,12 +31,14 @@ class GuiTune;
 class AudioBase : public QThread
 {
  public:
-  AudioBase();
+  AudioBase(QString);
   virtual ~AudioBase();
   virtual int init_audio() = 0;
+  virtual int close_audio() = 0;
   virtual void setDSPName(QString) = 0;
   virtual void setSampleFreq(int) = 0;
   virtual void proc_audio() = 0;
+  void setSampleNr(int);
   void setGuiPtr(GuiTune *);
   void update_lfreq();
   void update_nfreq(double);
@@ -48,6 +50,7 @@ class AudioBase : public QThread
   GuiTune* mw;
   QString dsp_devicename;
   int     sampnr;
+  int     sampfreq;
   unsigned char sample[64000];
   double  freq_0t;
   double  lfreq_0t;

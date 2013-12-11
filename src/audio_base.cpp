@@ -41,7 +41,7 @@
 #include "osziview.h"
 #include "logview.h"
 
-AudioBase::AudioBase() : mw(NULL), dsp_devicename(QString("/dev/dsp"))
+AudioBase::AudioBase(QString audio_name) : mw(NULL), dsp_devicename(audio_name)
 {
 }
 
@@ -74,4 +74,9 @@ void AudioBase::update_nfreq(double _nfreq_0t)
   
   sprintf(str, "%.3f", _nfreq_0t);
   mw->GetNFreqviewPtr()->display(str);
+}
+
+void AudioBase::setSampleNr(int nr)
+{
+  sampnr = nr;
 }

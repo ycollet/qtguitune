@@ -18,15 +18,7 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <linux/soundcard.h>
-
-#include <unistd.h>
 #include <stdio.h>
-#include <time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -35,7 +27,7 @@
 
 #include <QtGui>
 
-#include "audio_oss.h"
+#include "audio_alsa.h"
 #include "resources.h"
 #include "guitune.h"
 #include "osziview.h"
@@ -43,7 +35,7 @@
 
 extern double KAMMERTON, KAMMERTON_LOG;
 
-AudioOSS::AudioOSS(QString audio_name) : AudioBase(audio_name), audio(0)
+AudioALSA::AudioALSA(QString audio_name) : AudioBase(audio_name), audio(0)
 {
   // KAMMERTON: the reference A note (440 Hz for standard tuning = KAMMERTON_NORM
   freqs[0]  = KAMMERTON; // The reference frequency
@@ -56,86 +48,87 @@ AudioOSS::AudioOSS(QString audio_name) : AudioBase(audio_name), audio(0)
   }
 }
 
-AudioOSS::~AudioOSS() 
+AudioALSA::~AudioALSA() 
 {
   int ret = close_audio();
 }
 
-void AudioOSS::setDSPName(QString name)
+void AudioALSA::setDSPName(QString name)
 {
   audio = close_audio();
   dsp_devicename = QString(name);
   audio = init_audio();
 }
 
-int AudioOSS::close_audio()
+int AudioALSA::close_audio()
 {
-  return close(audio);
+  snd_pcm_close(capture_handle);
+  return 0;
 }
 
-int AudioOSS::init_audio()
+int AudioALSA::init_audio()
 {
+  int err = 0, dir = 1;
+  unsigned int tmp_sampfreq = sampfreq;
   std::cout << qPrintable(tr("initializing audio at ")) << qPrintable(dsp_devicename) << std::endl;
 
-  audio = open(dsp_devicename.toStdString().c_str(), O_RDONLY);
-  if (audio == -1) {
-    perror(dsp_devicename.toStdString().c_str());
-    exit(1);
+  if ((err = snd_pcm_open(&capture_handle, dsp_devicename.toStdString().c_str(), SND_PCM_STREAM_CAPTURE, 0)) < 0) {
+    std::cerr << "cannot open audio device " << qPrintable(dsp_devicename) << " (" << snd_strerror(err) << ")." << std::endl;
+    exit (1);
   }
-  fcntl(audio,F_SETFD,FD_CLOEXEC); // Set the 'audio' file descriptor (F_SETFD) to FD_CLOEXEC: if the FD_CLOEXEC flag in the third argument is 0,
-                                   // the file shall remain open across the exec functions; otherwise, the file shall be closed upon successful
-                                   // execution of one of the exec functions.
-
-  if (dsp_devicename ==  QString("/dev/stdin")) {
-    std::cout << qPrintable(tr("reading data from stdin")) << std::endl;
-    blksize = 32;
-    std::cout << "  blocksize = " << blksize  << std::endl;
-    std::cout << "  sampfreq  = " << sampfreq << std::endl;
-    sampfreq_exact = sampfreq;
-  } else {
-    // Get the capabilities of the audio stream
-    int caps;
-    ioctl(audio, SNDCTL_DSP_GETCAPS, &caps);
-    std::cout << "OSS-Version "  << int(caps & DSP_CAP_REVISION) << std::endl;
-    std::cout << "  DUPLEX   = " << int(caps & DSP_CAP_DUPLEX)   << std::endl;
-    std::cout << "  REALTIME = " << int(caps & DSP_CAP_REALTIME) << std::endl;
-    std::cout << "  BATCH    = " << int(caps & DSP_CAP_BATCH)    << std::endl;
-    std::cout << "  COPROC   = " << int(caps & DSP_CAP_COPROC)   << std::endl;
-    std::cout << "  TRIGGER  = " << int(caps & DSP_CAP_TRIGGER)  << std::endl;
-    std::cout << "  MMAP     = " << int(caps & DSP_CAP_MMAP)     << std::endl;
-
-    blksize = 8; // 2^8 = 256
-    // Automatically set the buffer allocation
-    ioctl(audio, SNDCTL_DSP_SETFRAGMENT, &blksize);
-
-    // Get the block size after buffer allocation
-    ioctl(audio, SNDCTL_DSP_GETBLKSIZE, &blksize);
-    std::cout << "blocksize = " << blksize << std::endl;
-
-    // Suspend the application until all samples have been played
-    ioctl(audio, SNDCTL_DSP_SYNC, NULL);
-    // Set the sample format to unsigned 8 bits
-    int a_sampsize = AFMT_U8;
-    ioctl(audio, SNDCTL_DSP_SETFMT, &a_sampsize);
-    // Set mono mode
-    int a_stereo = 0;
-    ioctl(audio, SNDCTL_DSP_STEREO, &a_stereo);
-
-    int a_speed = sampfreq;
-    std::cout << "sampfreq = " << sampfreq << std::endl;
-    // Set the sampling rate
-    ioctl(audio, SNDCTL_DSP_SPEED, &a_speed);
-    ioctl(audio, SOUND_PCM_READ_RATE, &sampfreq); // Obsolete !
-    std::cout << "sampfreq = " << sampfreq << std::endl;
-    sampfreq_exact = sampfreq;
+  
+  if ((err = snd_pcm_hw_params_malloc(&hw_params)) < 0) {
+    std::cerr << "cannot allocate hardware parameter structure (" << snd_strerror(err) << ")." << std::endl;
+    exit (1);
+  }
+				 
+  if ((err = snd_pcm_hw_params_any(capture_handle, hw_params)) < 0) {
+    std::cerr << "cannot initialize hardware parameter structure (" << snd_strerror(err) << ")." << std::endl;
+    exit (1);
+  }
+  
+  if ((err = snd_pcm_hw_params_set_access(capture_handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0) {
+    std::cerr << "cannot set access type (" << snd_strerror(err) << ")." << std::endl;
+    exit (1);
+  }
+  
+  if ((err = snd_pcm_hw_params_set_format(capture_handle, hw_params, SND_PCM_FORMAT_U8)) < 0) {
+    std::cerr << "cannot set sample format (" << snd_strerror(err) << ")." << std::endl;
+    exit (1);
+  }
+  
+  if ((err = snd_pcm_hw_params_set_rate_near(capture_handle, hw_params, &tmp_sampfreq, &dir)) < 0) {
+    std::cerr << "cannot set sample rate (" << snd_strerror(err) << ")." << std::endl;
+    exit (1);
+  }
+  sampfreq = tmp_sampfreq;
+  
+  if ((err = snd_pcm_hw_params_set_channels(capture_handle, hw_params, 1)) < 0) {
+    std::cerr << "cannot set channel count (" << snd_strerror(err) << ")." << std::endl;
+    exit (1);
+  }
+  
+  if ((err = snd_pcm_hw_params(capture_handle, hw_params)) < 0) {
+    std::cerr << "cannot set parameters (" << snd_strerror(err) << ")." << std::endl;
+    exit (1);
+  }
+  
+  snd_pcm_hw_params_free(hw_params);
+  
+  if ((err = snd_pcm_prepare(capture_handle)) < 0) {
+    std::cerr << "cannot prepare audio interface for use (" << snd_strerror(err) << std::endl;
+    exit (1);
   }
 
-  return(audio);
+  blksize = 256;
+
+  return 1;
 }
 
-void AudioOSS::proc_audio()
+void AudioALSA::proc_audio()
 {
   int i,j,n,trig,trigpos;
+  int err = 0;
   static int k = 0;
   unsigned char *c = NULL;
   double ldf,mldf;
@@ -143,7 +136,12 @@ void AudioOSS::proc_audio()
   processing_audio = 1;
   trigpos = 0;
   c = sample;
-  n = read(audio, c, blksize);
+  
+  if ((err = snd_pcm_readi(capture_handle, c, blksize)) != blksize) {
+    std::cerr << "read from audio interface failed (" << snd_strerror(err) << ")." << std::endl;
+    exit (1);
+  }
+  n = blksize;
   
   // We search a 0 crossing value (beware: unsigned char !)
   for(i=0; i<n && Abs(c[i]-128)<2; i++);
@@ -158,7 +156,11 @@ void AudioOSS::proc_audio()
 	  trigpos = i;
 	}
       if (trig==0) {
-	n = read(audio, c, blksize);
+	if ((err = snd_pcm_readi(capture_handle, c, blksize)) != blksize) {
+	  std::cerr << "read from audio interface failed (" << snd_strerror(err) << ")." << std::endl;
+	  exit (1);
+	}
+	n = blksize;
 	j++;
 	i=0;
       }
@@ -168,7 +170,12 @@ void AudioOSS::proc_audio()
   if (trig) {
     for(i=n-trigpos; i<sampnr; i+=n) {
       c += n;
-      n  = read(audio, c, blksize);
+      
+      if ((err = snd_pcm_readi(capture_handle, c, blksize)) != blksize) {
+	std::cerr << "read from audio interface failed (" << snd_strerror(err) << ")." << std::endl;
+	exit (1);
+      }
+      n = blksize;
     }
 
     // Plot the measured values
@@ -207,10 +214,9 @@ void AudioOSS::proc_audio()
   processing_audio = 0;
 }
 
-void AudioOSS::setSampleFreq(int f)
+void AudioALSA::setSampleFreq(int f)
 {
   sampfreq = f;
   audio = close_audio();
   audio = init_audio();
 }
-
