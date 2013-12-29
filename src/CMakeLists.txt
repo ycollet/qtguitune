@@ -66,7 +66,7 @@ add_executable(qtguitune ${QTGUITUNE_SRCS}
 			 ${QTGUITUNE_UI_SRCS}
 			 ${QTGUITUNE_UI_HEADERS_MOC})
 
-target_link_libraries(qtguitune ${QT_LIBRARIES} ${JACK_LIBRARIES} ${ALSA_LIBRARY})
+target_link_libraries(qtguitune ${QT_LIBRARIES} ${JACK_LIBRARIES} ${ALSA_LIBRARIES})
 
 install(TARGETS qtguitune
         DESTINATION bin)

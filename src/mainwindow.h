@@ -33,7 +33,13 @@ class MainWindow : public QMainWindow
   MainWindow(QWidget *parent, QString name, int argc, char **argv);
   ~MainWindow();
   
+ protected:
+  void closeEvent(QCloseEvent *event);
+ 
  private:
+  void LoadSettings();
+  void SaveSettings();
+  
   GuiTune* mw;
   QMenu* filemenu;
   QMenu* optmenu;

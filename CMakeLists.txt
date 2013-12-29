@@ -31,12 +31,15 @@ endif (ENABLE_DEBUG_MESSAGES)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
+find_package(ALSA REQUIRED)
+
 find_package(Qt4 REQUIRED)
 #find_package(Jack REQUIRED)
 
 include(${QT_USE_FILE})
 include_directories("${CMAKE_SOURCE_DIR}/src"
-                    "${CMAKE_BINARY_DIR}")
+                    "${CMAKE_BINARY_DIR}"
+		    "${ALSA_INCLUDE_DIRS}")
 
 if (ENABLE_JACK)
   add_definitions("-DENABLE_JACK")

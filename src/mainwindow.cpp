@@ -54,10 +54,6 @@ MainWindow::MainWindow(QWidget *parent, QString name, int argc, char **argv) : Q
   TuningEquidistantAction->setCheckable(true);
   TuningNaturalAction->setCheckable(true);
   
-  mw->setTuningNorm();
-  TuningNormalAction->setChecked(true);
-  TuningEquidistantAction->setChecked(true);
-
   connect(TuningNormalAction,      SIGNAL(triggered()), this, SLOT(m_tuning_norm()));
   connect(TuningWienAction,        SIGNAL(triggered()), this, SLOT(m_tuning_wien()));
   connect(TuningPhysicalAction,    SIGNAL(triggered()), this, SLOT(m_tuning_phys()));
@@ -86,9 +82,6 @@ MainWindow::MainWindow(QWidget *parent, QString name, int argc, char **argv) : Q
   connect(ViewGermanAction,  SIGNAL(triggered()), this, SLOT(m_scale_GE()));
   connect(ViewGermanaAction, SIGNAL(triggered()), this, SLOT(m_scale_GEa()));
   
-  mw->setScaleUS();
-  ViewUSAction->setChecked(true);
-  
   scalemenu->addAction(ViewUSAction);
   scalemenu->addAction(ViewUSaAction);
   scalemenu->addAction(ViewGermanAction);
@@ -100,14 +93,15 @@ MainWindow::MainWindow(QWidget *parent, QString name, int argc, char **argv) : Q
   
   OSSDriverAction->setCheckable(true);
   ALSADriverAction->setCheckable(true);
-  OSSDriverAction->setChecked(true);
   
   connect(OSSDriverAction,  SIGNAL(triggered()), this, SLOT(m_driver_OSS()));
   connect(ALSADriverAction, SIGNAL(triggered()), this, SLOT(m_driver_ALSA()));
   
   drivermenu->addAction(OSSDriverAction);
   drivermenu->addAction(ALSADriverAction);
-    
+
+  LoadSettings();
+  
   this->adjustSize();
   this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   this->setFocusPolicy(Qt::ClickFocus);
@@ -195,9 +189,58 @@ void MainWindow::m_scale_GEa()
 void MainWindow::m_driver_OSS()
 {
   mw->setAudioDriver(GuiTune::OSSDriver);
+  OSSDriverAction->setChecked(true);
+  ALSADriverAction->setChecked(false);
 }
 
 void MainWindow::m_driver_ALSA()
 {
   mw->setAudioDriver(GuiTune::ALSADriver);
+  OSSDriverAction->setChecked(false);
+  ALSADriverAction->setChecked(true);
+}
+
+void MainWindow::LoadSettings()
+{
+  QSettings settings("AudioApp", "QtGuiTune");
+  
+  if (settings.value("ViewUSAction",      true).toBool())  m_scale_US();
+  if (settings.value("ViewUSaAction",     false).toBool()) m_scale_USa();
+  if (settings.value("ViewGermanAction",  false).toBool()) m_scale_GE();
+  if (settings.value("ViewGermanaAction", false).toBool()) m_scale_GEa();
+  
+  if (settings.value("TuningEquidistantAction", true).toBool())  m_tuning_equi();
+  if (settings.value("TuningNaturalAction",     false).toBool()) m_tuning_nat();
+  
+  if (settings.value("TuningNormalAction",   true).toBool())  m_tuning_norm();
+  if (settings.value("TuningWienAction",     false).toBool()) m_tuning_wien();
+  if (settings.value("TuningPhysicalAction", false).toBool()) m_tuning_phys();
+  
+  if (GuiTune::OSSDriver == (GuiTune::DriverType)settings.value("AudioDriver", GuiTune::OSSDriver).toInt()) m_driver_OSS();
+  if (GuiTune::ALSADriver == (GuiTune::DriverType)settings.value("AudioDriver", GuiTune::OSSDriver).toInt()) m_driver_ALSA();
+}
+
+void MainWindow::SaveSettings()
+{
+  QSettings settings("AudioApp", "QtGuiTune");
+  
+  settings.setValue("ViewUSAction",      ViewUSAction->isChecked());
+  settings.setValue("ViewUSaAction",     ViewUSaAction->isChecked());
+  settings.setValue("ViewGermanAction",  ViewGermanAction->isChecked());
+  settings.setValue("ViewGermanaAction", ViewGermanaAction->isChecked());
+  
+  settings.setValue("TuningEquidistantAction", TuningEquidistantAction->isChecked());
+  settings.setValue("TuningNaturalAction",     TuningNaturalAction->isChecked());
+  
+  settings.setValue("TuningNormalAction",   TuningNormalAction->isChecked());
+  settings.setValue("TuningWienAction",     TuningWienAction->isChecked());
+  settings.setValue("TuningPhysicalAction", TuningPhysicalAction->isChecked());
+  
+  settings.setValue("AudioDriver", mw->CurrentDriver);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+  SaveSettings();
+  event->accept();
 }
