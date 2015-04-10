@@ -92,7 +92,7 @@ void LogView::drawarrow(QColor col)
 {
   int x, y;
   
-  setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+  // Qt4 setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
   
   QPainter p(this);
   p.setPen(Qt::white);
@@ -109,7 +109,7 @@ void LogView::deletearrow(QColor col)
 {
   int x, y;
   
-  setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+  // Qt4 setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
   
   QPainter p(this);
   p.setPen(arrow_bgcol);

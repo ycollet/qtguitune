@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "osziview.h"
 #include "logview.h"
@@ -60,7 +60,7 @@ GuiTune::GuiTune(QWidget *parent, int argc, char **argv) : QWidget(parent), audi
   logview->setLineWidth(2);
   
   freqview = new QLCDNumber(parent);
-  freqview->setNumDigits(9);
+  freqview->setDigitCount(9);
   freqview->setFrameStyle(QFrame::NoFrame);
   freqview->setSegmentStyle(QLCDNumber::Filled);
   QLabel* freqviewLabel = new QLabel(tr("Freq.:"), parent);
@@ -72,7 +72,7 @@ GuiTune::GuiTune(QWidget *parent, int argc, char **argv) : QWidget(parent), audi
   freqviewWidget->setLayout(freqviewLayout);
   
   nfreqview = new QLCDNumber(parent);
-  nfreqview->setNumDigits(9);
+  nfreqview->setDigitCount(9);
   nfreqview->setFrameStyle(QFrame::NoFrame);
   nfreqview->setSegmentStyle(QLCDNumber::Filled);
   QLabel* nfreqviewLabel = new QLabel(tr("Note:"), parent);

@@ -45,7 +45,7 @@ void OsziView::paintSample(void)
   int i,x1,x2,y1,y2;
   //erase();
   
-  setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+  // Qt4 setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
   
   QPainter paint(this);
   
@@ -71,7 +71,7 @@ double OsziView::getfreq(void)
   int endpoint, tc, i;
   double freq;
   
-  setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+  // Qt4 setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
   
   endpoint = 0;
   
@@ -99,7 +99,7 @@ double OsziView::getfreq2(void)
   int endpoint, startpoint, t1, t2, A1, A2, tc, i, schmitt_triggered;
   double freq;
   
-  setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+  // Qt4 setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
   
   for(i=0, A1=0; i<sampnr; i++)
     if (A1 < Abs(samp[i] - 128) && samp[i] - 128 > 0) A1 = Abs(samp[i] - 128);
@@ -185,7 +185,7 @@ void OsziView::drawScale(void)
   char str[100];
   QPainter paint(this);
   
-  setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
+  // Qt4 setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
   
   //QRect r(rect()); //YC
   //paint.eraseRect(r); //YC

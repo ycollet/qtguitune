@@ -2,7 +2,7 @@
 #  QtGuiTune
 #  Qt Guitar Tuner
 #
-#  Copyright (C) 2013 Yann Collette
+#  Copyright (C) 2013-2015 Yann Collette
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -27,7 +27,7 @@ set(QTGUITUNE_UI_SRCS ./guitune.cpp
                       ./audio_oss.cpp
                       ./mainwindow.cpp
                       ./osziview.cpp
-		      ./logview.cpp)
+		              ./logview.cpp)
 
 set(QTGUITUNE_UI_HEADERS ./guitune.h
                          ./mainwindow.h)
@@ -46,27 +46,27 @@ set(FILES_TO_TRANSLATE ${FTT_HEADER_FILES} ${FTT_CPP_FILES} ${FTT_UI_FILES})
 file(GLOB TRANSLATIONS_FILES translations/*.ts)
 
 if (UPDATE_TRANSLATIONS)
-  qt4_create_translation(QTGUITUNE_QM ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+  qt5_create_translation(QTGUITUNE_QM ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
 else (UPDATE_TRANSLATIONS)
-  qt4_add_translation(QTGUITUNE_QM ${TRANSLATIONS_FILES})
+  qt5_add_translation(QTGUITUNE_QM ${TRANSLATIONS_FILES})
 endif (UPDATE_TRANSLATIONS) 
 
 add_custom_target(translations_target DEPENDS ${QTGUITUNE_QM})
 
-qt4_wrap_cpp(QTGUITUNE_UI_HEADERS_MOC ${QTGUITUNE_UI_HEADERS})
+qt5_wrap_cpp(QTGUITUNE_UI_HEADERS_MOC ${QTGUITUNE_UI_HEADERS})
 
-#qt4_add_resources(QTGUITUNE_RSRCS ./qtguitune.qrc)
+#qt5_add_resources(QTGUITUNE_RSRCS ./qtguitune.qrc)
 set(QTGUITUNE_RSRCS )
 
-#qt4_add_translation(QTGUITUNE_QM ${QTGUITUNE_TRANS})
+#qt5_add_translation(QTGUITUNE_QM ${QTGUITUNE_TRANS})
 
 add_executable(qtguitune ${QTGUITUNE_SRCS} 
                          ${QTGUITUNE_RSRCS}
-			 ${QTGUITUNE_QM}
-			 ${QTGUITUNE_UI_SRCS}
-			 ${QTGUITUNE_UI_HEADERS_MOC})
+			             ${QTGUITUNE_QM}
+			             ${QTGUITUNE_UI_SRCS}
+			             ${QTGUITUNE_UI_HEADERS_MOC})
 
-target_link_libraries(qtguitune ${QT_LIBRARIES} ${JACK_LIBRARIES} ${ALSA_LIBRARIES})
+target_link_libraries(qtguitune ${Qt5Widgets_LIBRARIES} ${JACK_LIBRARIES} ${ALSA_LIBRARIES})
 
 install(TARGETS qtguitune
         DESTINATION bin)

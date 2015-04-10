@@ -3,7 +3,7 @@
 #  Qt Guitar Tuner
 #  $Id:$
 #
-#  Copyright (C) 2013 by Yann Collette and others
+#  Copyright (C) 2013-2015 by Yann Collette and others
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License version 2.
@@ -33,13 +33,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 find_package(ALSA REQUIRED)
 
-find_package(Qt4 REQUIRED)
+find_package(Qt5 COMPONENTS Widgets WebKitWidgets LinguistTools)
 #find_package(Jack REQUIRED)
 
-include(${QT_USE_FILE})
+include_directories(${Qt5Widgets_INCLUDES})
+include_directories(${Qt5WebKitWidgets_INCLUDES})
+
 include_directories("${CMAKE_SOURCE_DIR}/src"
                     "${CMAKE_BINARY_DIR}"
-		    "${ALSA_INCLUDE_DIRS}")
+		            "${ALSA_INCLUDE_DIRS}")
 
 if (ENABLE_JACK)
   add_definitions("-DENABLE_JACK")

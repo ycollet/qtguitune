@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "mainwindow.h"
 
