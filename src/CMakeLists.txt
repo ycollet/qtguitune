@@ -27,7 +27,7 @@ set(QTGUITUNE_UI_SRCS ./guitune.cpp
                       ./audio_oss.cpp
                       ./mainwindow.cpp
                       ./osziview.cpp
-		              ./logview.cpp)
+	              ./logview.cpp)
 
 set(QTGUITUNE_UI_HEADERS ./guitune.h
                          ./mainwindow.h)
@@ -62,9 +62,9 @@ set(QTGUITUNE_RSRCS )
 
 add_executable(qtguitune ${QTGUITUNE_SRCS} 
                          ${QTGUITUNE_RSRCS}
-			             ${QTGUITUNE_QM}
-			             ${QTGUITUNE_UI_SRCS}
-			             ${QTGUITUNE_UI_HEADERS_MOC})
+	                 ${QTGUITUNE_QM}
+	                 ${QTGUITUNE_UI_SRCS}
+	                 ${QTGUITUNE_UI_HEADERS_MOC})
 
 target_link_libraries(qtguitune ${Qt5Widgets_LIBRARIES} ${JACK_LIBRARIES} ${ALSA_LIBRARIES})
 

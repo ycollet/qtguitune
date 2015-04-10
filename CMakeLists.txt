@@ -41,7 +41,7 @@ include_directories(${Qt5WebKitWidgets_INCLUDES})
 
 include_directories("${CMAKE_SOURCE_DIR}/src"
                     "${CMAKE_BINARY_DIR}"
-		            "${ALSA_INCLUDE_DIRS}")
+	            "${ALSA_INCLUDE_DIRS}")
 
 if (ENABLE_JACK)
   add_definitions("-DENABLE_JACK")

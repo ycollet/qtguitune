@@ -4,7 +4,7 @@
 //
 //    guitune - program for tuning instruments (actually an oscilloscope)
 //    Copyright (C) 1999  Florian Berger
-//    Copyright (C) 2013  Yann Collette
+//    Copyright (C) 2013-2015  Yann Collette
 //    Email: florian.berger@jk.uni-linz.ac.at
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -21,11 +21,11 @@
 //    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#include <QtGui>
+#include <QtWidgets>
 
 class GuiTune;
 
-#define TIMER_TIME 1000
+#define TIMER_TIME    1000
 #define NO_TRIG_LIMIT 10
 
 class AudioBase : public QThread

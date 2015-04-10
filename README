@@ -3,7 +3,7 @@
                           --==###########==--
 
                    Copyright (C) 1999 Florian Berger
-                   Copyright (C) 2013 Yann Collette
+                   Copyright (C) 2013-2015 Yann Collette
                    
                 email: florian.berger@jk.uni-linz.ac.at
                   
@@ -29,14 +29,14 @@ What is guitune ?
    trigger levels per time, calculates the frequency and shows the
    tone on a tone-scale.
 
-   program compiles for qt-4.X.X
+   program compiles for qt-5.X.X
    
 
 Requirements
 ------------
 
 jack-1.9.x
-Qt-4.7
+Qt-5.x
    
 Installation
 ------------

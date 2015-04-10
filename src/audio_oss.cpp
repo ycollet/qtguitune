@@ -1,7 +1,7 @@
 //
 //    guitune - program for tuning instruments (actually an oscilloscope)
 //    Copyright (C) 1999  Florian Berger
-//    Copyright (C) 2013  Yann Collette
+//    Copyright (C) 2013-2015  Yann Collette
 //    Email: florian.berger@jk.uni-linz.ac.at
 //
 //    This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 
 #include <iostream>
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "audio_oss.h"
 #include "resources.h"
