@@ -46,14 +46,14 @@ set(FILES_TO_TRANSLATE ${FTT_HEADER_FILES} ${FTT_CPP_FILES} ${FTT_UI_FILES})
 file(GLOB TRANSLATIONS_FILES translations/*.ts)
 
 if (UPDATE_TRANSLATIONS)
-  qt5_create_translation(QTGUITUNE_QM ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+  qt6_create_translation(QTGUITUNE_QM ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
 else (UPDATE_TRANSLATIONS)
-  qt5_add_translation(QTGUITUNE_QM ${TRANSLATIONS_FILES})
-endif (UPDATE_TRANSLATIONS) 
+  qt6_add_translation(QTGUITUNE_QM ${TRANSLATIONS_FILES})
+endif (UPDATE_TRANSLATIONS)
 
 add_custom_target(translations_target DEPENDS ${QTGUITUNE_QM})
 
-qt5_wrap_cpp(QTGUITUNE_UI_HEADERS_MOC ${QTGUITUNE_UI_HEADERS})
+qt6_wrap_cpp(QTGUITUNE_UI_HEADERS_MOC ${QTGUITUNE_UI_HEADERS})
 
 #qt5_add_resources(QTGUITUNE_RSRCS ./qtguitune.qrc)
 set(QTGUITUNE_RSRCS )
@@ -66,7 +66,7 @@ add_executable(qtguitune ${QTGUITUNE_SRCS}
 	                 ${QTGUITUNE_UI_SRCS}
 	                 ${QTGUITUNE_UI_HEADERS_MOC})
 
-target_link_libraries(qtguitune ${Qt5Widgets_LIBRARIES} ${JACK_LIBRARIES} ${ALSA_LIBRARIES})
+target_link_libraries(qtguitune Qt6::Widgets ${JACK_LIBRARIES} ${ALSA_LIBRARIES})
 
 install(TARGETS qtguitune
         DESTINATION bin)

@@ -20,7 +20,7 @@
 
 project(QtGuiTune C CXX)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.16)
 
 option(ENABLE_JACK "Enable jack (for GUI debugging, turn this option to off)" ON)
 option(ENABLE_DEBUG_MESSAGES "Enable debug messages" OFF)
@@ -33,11 +33,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 find_package(ALSA REQUIRED)
 
-find_package(Qt5 COMPONENTS Widgets WebKitWidgets LinguistTools)
+find_package(Qt6 REQUIRED COMPONENTS Widgets LinguistTools)
 #find_package(Jack REQUIRED)
-
-include_directories(${Qt5Widgets_INCLUDES})
-include_directories(${Qt5WebKitWidgets_INCLUDES})
 
 include_directories("${CMAKE_SOURCE_DIR}/src"
                     "${CMAKE_BINARY_DIR}"

@@ -31,7 +31,7 @@ OsziView::OsziView(QWidget *parent) : QWidget(parent)
 {
   QPalette Pal(palette());
 
-  Pal.setColor(QPalette::Background, QColor(Qt::white));
+  Pal.setColor(QPalette::Window, QColor(Qt::white));
   setAutoFillBackground(true);
   setPalette(Pal);
   
@@ -49,7 +49,7 @@ void OsziView::paintSample(void)
   
   QPainter paint(this);
   
-  paint.eraseRect(xscr, yscr, wscr + 1, hscr + 1);
+  paint.fillRect(xscr, yscr, wscr + 1, hscr + 1, palette().color(QPalette::Window));
   paint.setPen(Qt::gray);
   paint.drawLine(xscr, yscr + 128 * hscr / 256, xscr + wscr - 1, yscr + 128 * hscr / 256);
   paint.setPen(Qt::green);
@@ -226,7 +226,7 @@ void OsziView::drawScale(void)
 		   xscr + (i * sampfreq) * wscr / sampnr, yscr + hscr + 7);
     
     sprintf(str,"%.0f",i*1000); // in ms
-    paint.drawText(xscr + (i * sampfreq) * wscr / sampnr - paint.fontMetrics().width(str) / 2,
+    paint.drawText(xscr + (i * sampfreq) * wscr / sampnr - paint.fontMetrics().horizontalAdvance(str) / 2,
 		   yscr + hscr + 7 + paint.fontMetrics().ascent(),
 		   str);
   }

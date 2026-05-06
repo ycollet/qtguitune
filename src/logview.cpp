@@ -53,22 +53,22 @@ LogView::LogView(QWidget *parent) : QFrame(parent)
   x0 = 10;
   y0 = 26;
   h  = 10;
-  r = Pal.color(QPalette::Background).red();
-  g = Pal.color(QPalette::Background).green();
-  b = Pal.color(QPalette::Background).blue();
+  r = Pal.color(QPalette::Window).red();
+  g = Pal.color(QPalette::Window).green();
+  b = Pal.color(QPalette::Window).blue();
   gray = r + g + b;
   r = r * 3 * 0xD0 / gray; if (r > 0xFF) r = 0xFF;
   g = g * 3 * 0xD0 / gray; if (g > 0xFF) g = 0xFF;
   b = b * 3 * 0xD0 / gray; if (b > 0xFF) b = 0xFF;
 
   // set black background
-  Pal.setColor(QPalette::Background, QColor(qRgb(r,g,b)));
+  Pal.setColor(QPalette::Window, QColor(qRgb(r,g,b)));
   setAutoFillBackground(true);
   setPalette(Pal);
 
-  r = Pal.color(QPalette::Background).red();
-  g = Pal.color(QPalette::Background).green();
-  b = Pal.color(QPalette::Background).blue();
+  r = Pal.color(QPalette::Window).red();
+  g = Pal.color(QPalette::Window).green();
+  b = Pal.color(QPalette::Window).blue();
   gray = r + g + b;
   r = r *3 * 0x80 / gray; if (r > 0xFF) r = 0xFF;
   g = g *3 * 0x80 / gray; if (g > 0xFF) g = 0xFF;
@@ -129,9 +129,9 @@ void LogView::change_lfreq(double freq)
   int r,g,b;
   QPalette Pal(palette());
   
-  r = Pal.color(QPalette::Background).red();
-  g = Pal.color(QPalette::Background).green();
-  b = Pal.color(QPalette::Background).blue();
+  r = Pal.color(QPalette::Window).red();
+  g = Pal.color(QPalette::Window).green();
+  b = Pal.color(QPalette::Window).blue();
   deletearrow(QColor(qRgb(r,g,b)));
   
   lfreq = freq;
@@ -186,9 +186,9 @@ void LogView::paintEvent(QPaintEvent *)
   int r,g,b;
   QPalette Pal(palette());
   
-  r = Pal.color(QPalette::Background).red();
-  g = Pal.color(QPalette::Background).green();
-  b = Pal.color(QPalette::Background).blue();
+  r = Pal.color(QPalette::Window).red();
+  g = Pal.color(QPalette::Window).green();
+  b = Pal.color(QPalette::Window).blue();
 
   lfreq0 = KAMMERTON_LOG - D_NOTE_LOG/2.0;
   lfreq1 = KAMMERTON_LOG - D_NOTE_LOG/2.0 + LOG_2;
@@ -232,12 +232,12 @@ void LogView::paintEvent(QPaintEvent *)
     x2 = lfreq_pos(lfreqs[grundton]);
     p.drawLine(x2, y0 + h, x2, y0 + h + 10 + fontMetrics().height() * 2);
     p.setPen(Qt::black);
-    p.drawText(x2 - p.fontMetrics().width("Key") / 2 + 1,
+    p.drawText(x2 - p.fontMetrics().horizontalAdvance("Key") / 2 + 1,
 	       y0 + h + 10 + fontMetrics().ascent() + fontMetrics().height() * 2 + 1,
 	       "Key");
     
     p.setPen(Qt::white);
-    p.drawText(x2 - p.fontMetrics().width("Key") / 2,
+    p.drawText(x2 - p.fontMetrics().horizontalAdvance("Key") / 2,
 	       y0 + h + 10 + fontMetrics().ascent() + fontMetrics().height() * 2,
 	       "Key");
     
@@ -250,12 +250,12 @@ void LogView::paintEvent(QPaintEvent *)
     for(k=0; k<23; k++) {
       x2 = lfreq_pos(nat_lfreq[k]);
       p.setPen(Qt::black);
-      p.drawText(x2 - p.fontMetrics().width(tuning_nat[k]) / 2 + 1,
+      p.drawText(x2 - p.fontMetrics().horizontalAdvance(tuning_nat[k]) / 2 + 1,
 		 y0 + h + 10 + fontMetrics().ascent() + fontMetrics().height() * (k%3) + 1,
 		 tuning_nat[k]);
       
       p.setPen(Qt::white);
-      p.drawText(x2 - p.fontMetrics().width(tuning_nat[k]) / 2,
+      p.drawText(x2 - p.fontMetrics().horizontalAdvance(tuning_nat[k]) / 2,
 		 y0 + h + 10 + fontMetrics().ascent() + fontMetrics().height() * (k%3),
 		 tuning_nat[k]);
     }
@@ -275,9 +275,9 @@ void LogView::paintEvent(QPaintEvent *)
       p.drawLine(x, y + h, x, y + h + 7);
 
     p.setPen(Qt::black);
-    p.drawText(x - p.fontMetrics().width(note[i]) / 2 + 1, y - 10 + 1, note[i]);
+    p.drawText(x - p.fontMetrics().horizontalAdvance(note[i]) / 2 + 1, y - 10 + 1, note[i]);
     p.setPen(Qt::white);
-    p.drawText(x - p.fontMetrics().width(note[i]) / 2, y - 10, note[i]);
+    p.drawText(x - p.fontMetrics().horizontalAdvance(note[i]) / 2, y - 10, note[i]);
     
     p.setFont(QFont("System",8));
     
@@ -285,11 +285,11 @@ void LogView::paintEvent(QPaintEvent *)
       for(k=0; k<4; k++) {
 	sprintf(str, "%.2f", (double)(freqs[i] / 8.0 * (1<<k)));
 	p.setPen(Qt::black);
-	p.drawText(x - p.fontMetrics().width(str) / 2 + 1,
+	p.drawText(x - p.fontMetrics().horizontalAdvance(str) / 2 + 1,
 		   y + h + 10 + p.fontMetrics().ascent() + 1 + p.fontMetrics().height() * k, 
 		   str);
 	p.setPen(Qt::white);
-	p.drawText(x - p.fontMetrics().width(str) / 2,
+	p.drawText(x - p.fontMetrics().horizontalAdvance(str) / 2,
 		   y + h + 10 + p.fontMetrics().ascent() + p.fontMetrics().height() * k,
 		   str);
       }
@@ -302,6 +302,6 @@ void LogView::paintEvent(QPaintEvent *)
 
 void LogView::mousePressEvent(QMouseEvent *mouse)
 {
-  grundton = pos_note(mouse->x());
+  grundton = pos_note(qRound(mouse->position().x()));
   update();
 }
