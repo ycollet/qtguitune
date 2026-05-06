@@ -17,8 +17,6 @@
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #=============================================================================
 
-option(UPDATE_TRANSLATIONS "Update source translation translations/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)" OFF)
-
 set(QTGUITUNE_SRCS main.cpp)
 
 set(QTGUITUNE_UI_SRCS ./guitune.cpp
@@ -45,20 +43,14 @@ set(FILES_TO_TRANSLATE ${FTT_HEADER_FILES} ${FTT_CPP_FILES} ${FTT_UI_FILES})
 
 file(GLOB TRANSLATIONS_FILES translations/*.ts)
 
-if (UPDATE_TRANSLATIONS)
-  qt6_create_translation(QTGUITUNE_QM ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-else (UPDATE_TRANSLATIONS)
-  qt6_add_translation(QTGUITUNE_QM ${TRANSLATIONS_FILES})
-endif (UPDATE_TRANSLATIONS)
+qt6_create_translation(QTGUITUNE_QM ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
 
-add_custom_target(translations_target DEPENDS ${QTGUITUNE_QM})
+add_custom_target(translations_target ALL DEPENDS ${QTGUITUNE_QM})
 
 qt6_wrap_cpp(QTGUITUNE_UI_HEADERS_MOC ${QTGUITUNE_UI_HEADERS})
 
-#qt5_add_resources(QTGUITUNE_RSRCS ./qtguitune.qrc)
+#qt6_add_resources(QTGUITUNE_RSRCS ./qtguitune.qrc)
 set(QTGUITUNE_RSRCS )
-
-#qt5_add_translation(QTGUITUNE_QM ${QTGUITUNE_TRANS})
 
 add_executable(qtguitune ${QTGUITUNE_SRCS} 
                          ${QTGUITUNE_RSRCS}
