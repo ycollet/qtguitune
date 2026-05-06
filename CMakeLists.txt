@@ -40,14 +40,8 @@ include_directories("${CMAKE_SOURCE_DIR}/src"
 	            "${ALSA_INCLUDE_DIRS}")
 
 if (ENABLE_JACK)
-  find_package(Jack)
-  if (JACK_FOUND)
-    add_definitions("-DENABLE_JACK")
-    include_directories("${JACK_INCLUDE_DIRS}")
-  else()
-    message(WARNING "JACK not found, disabling JACK support")
-    set(ENABLE_JACK OFF)
-  endif()
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(JACK REQUIRED jack)
 endif (ENABLE_JACK)
 
 add_subdirectory(src)

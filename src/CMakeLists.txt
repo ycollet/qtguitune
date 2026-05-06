@@ -65,6 +65,10 @@ add_executable(qtguitune ${QTGUITUNE_SRCS}
 	                 ${QTGUITUNE_UI_HEADERS_MOC})
 
 target_link_libraries(qtguitune Qt6::Widgets ${JACK_LIBRARIES} ${ALSA_LIBRARIES})
+if (ENABLE_JACK)
+  target_include_directories(qtguitune PRIVATE ${JACK_INCLUDE_DIRS})
+  target_link_directories(qtguitune PRIVATE ${JACK_LIBRARY_DIRS})
+endif (ENABLE_JACK)
 
 install(TARGETS qtguitune
         DESTINATION bin)
