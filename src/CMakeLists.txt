@@ -30,8 +30,6 @@ set(QTGUITUNE_UI_SRCS ./guitune.cpp
 set(QTGUITUNE_UI_HEADERS ./guitune.h
                          ./mainwindow.h)
 
-set(QTGUITUNE_TRANS ./translations/qtguitune_en.ts)
-
 # Manage translation files
 set(FILES_TO_TRANSLATE)
 
