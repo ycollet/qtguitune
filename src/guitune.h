@@ -32,7 +32,7 @@ class GuiTune : public QWidget
  Q_OBJECT
 
  public:
-  enum DriverType {OSSDriver, ALSADriver};
+  enum DriverType {OSSDriver, ALSADriver, JACKDriver};
   
   GuiTune(QWidget *parent, int argc, char **argv);
   ~GuiTune();

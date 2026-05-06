@@ -59,6 +59,9 @@ class MainWindow : public QMainWindow
   QAction* ViewGermanaAction;
   QAction* OSSDriverAction;
   QAction* ALSADriverAction;
+#ifdef ENABLE_JACK
+  QAction* JACKDriverAction;
+#endif
     
  private slots:
   void m_tuning_norm();
@@ -72,5 +75,8 @@ class MainWindow : public QMainWindow
   void m_scale_GEa();
   void m_driver_OSS();
   void m_driver_ALSA();
+#ifdef ENABLE_JACK
+  void m_driver_JACK();
+#endif
 };
 #endif

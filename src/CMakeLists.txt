@@ -25,7 +25,11 @@ set(QTGUITUNE_UI_SRCS ./guitune.cpp
                       ./audio_oss.cpp
                       ./mainwindow.cpp
                       ./osziview.cpp
-	              ./logview.cpp)
+                      ./logview.cpp)
+
+if (ENABLE_JACK)
+  set(QTGUITUNE_UI_SRCS ${QTGUITUNE_UI_SRCS} ./audio_jack.cpp)
+endif (ENABLE_JACK)
 
 set(QTGUITUNE_UI_HEADERS ./guitune.h
                          ./mainwindow.h)

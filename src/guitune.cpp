@@ -29,6 +29,9 @@
 #include "audio_base.h"
 #include "audio_oss.h"
 #include "audio_alsa.h"
+#ifdef ENABLE_JACK
+#include "audio_jack.h"
+#endif
 
 //globally
 double KAMMERTON, KAMMERTON_LOG;
@@ -300,6 +303,9 @@ void GuiTune::setAudioDriver(DriverType _dt)
   CurrentDriver = _dt;
   if (_dt == OSSDriver)  audio = new AudioOSS(QString("/dev/dsp"));
   if (_dt == ALSADriver) audio = new AudioALSA(QString("hw:0,0"));
+#ifdef ENABLE_JACK
+  if (_dt == JACKDriver) audio = new AudioJACK(QString("qtguitune"));
+#endif
   
   audio->init_audio();
   

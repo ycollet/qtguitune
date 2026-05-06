@@ -93,12 +93,19 @@ MainWindow::MainWindow(QWidget *parent, QString name, int argc, char **argv) : Q
   
   OSSDriverAction->setCheckable(true);
   ALSADriverAction->setCheckable(true);
-  
+
   connect(OSSDriverAction,  SIGNAL(triggered()), this, SLOT(m_driver_OSS()));
   connect(ALSADriverAction, SIGNAL(triggered()), this, SLOT(m_driver_ALSA()));
-  
+
   drivermenu->addAction(OSSDriverAction);
   drivermenu->addAction(ALSADriverAction);
+
+#ifdef ENABLE_JACK
+  JACKDriverAction = new QAction(tr("&JACK"), parent);
+  JACKDriverAction->setCheckable(true);
+  connect(JACKDriverAction, SIGNAL(triggered()), this, SLOT(m_driver_JACK()));
+  drivermenu->addAction(JACKDriverAction);
+#endif
 
   LoadSettings();
   
@@ -191,6 +198,9 @@ void MainWindow::m_driver_OSS()
   mw->setAudioDriver(GuiTune::OSSDriver);
   OSSDriverAction->setChecked(true);
   ALSADriverAction->setChecked(false);
+#ifdef ENABLE_JACK
+  JACKDriverAction->setChecked(false);
+#endif
 }
 
 void MainWindow::m_driver_ALSA()
@@ -198,7 +208,20 @@ void MainWindow::m_driver_ALSA()
   mw->setAudioDriver(GuiTune::ALSADriver);
   OSSDriverAction->setChecked(false);
   ALSADriverAction->setChecked(true);
+#ifdef ENABLE_JACK
+  JACKDriverAction->setChecked(false);
+#endif
 }
+
+#ifdef ENABLE_JACK
+void MainWindow::m_driver_JACK()
+{
+  mw->setAudioDriver(GuiTune::JACKDriver);
+  OSSDriverAction->setChecked(false);
+  ALSADriverAction->setChecked(false);
+  JACKDriverAction->setChecked(true);
+}
+#endif
 
 void MainWindow::LoadSettings()
 {
@@ -216,8 +239,12 @@ void MainWindow::LoadSettings()
   if (settings.value("TuningWienAction",     false).toBool()) m_tuning_wien();
   if (settings.value("TuningPhysicalAction", false).toBool()) m_tuning_phys();
   
-  if (GuiTune::OSSDriver == (GuiTune::DriverType)settings.value("AudioDriver", GuiTune::OSSDriver).toInt()) m_driver_OSS();
-  if (GuiTune::ALSADriver == (GuiTune::DriverType)settings.value("AudioDriver", GuiTune::OSSDriver).toInt()) m_driver_ALSA();
+  GuiTune::DriverType savedDriver = (GuiTune::DriverType)settings.value("AudioDriver", GuiTune::OSSDriver).toInt();
+  if (savedDriver == GuiTune::OSSDriver)  m_driver_OSS();
+  if (savedDriver == GuiTune::ALSADriver) m_driver_ALSA();
+#ifdef ENABLE_JACK
+  if (savedDriver == GuiTune::JACKDriver) m_driver_JACK();
+#endif
 }
 
 void MainWindow::SaveSettings()

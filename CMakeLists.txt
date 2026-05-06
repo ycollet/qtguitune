@@ -34,14 +34,20 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 find_package(ALSA REQUIRED)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets LinguistTools)
-#find_package(Jack REQUIRED)
 
 include_directories("${CMAKE_SOURCE_DIR}/src"
                     "${CMAKE_BINARY_DIR}"
 	            "${ALSA_INCLUDE_DIRS}")
 
 if (ENABLE_JACK)
-  add_definitions("-DENABLE_JACK")
+  find_package(Jack)
+  if (JACK_FOUND)
+    add_definitions("-DENABLE_JACK")
+    include_directories("${JACK_INCLUDE_DIRS}")
+  else()
+    message(WARNING "JACK not found, disabling JACK support")
+    set(ENABLE_JACK OFF)
+  endif()
 endif (ENABLE_JACK)
 
 add_subdirectory(src)
