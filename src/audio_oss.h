@@ -30,6 +30,7 @@
 
 class AudioOSS : public AudioBase
 {
+  Q_OBJECT
  public:
   AudioOSS(QString);
   virtual ~AudioOSS();

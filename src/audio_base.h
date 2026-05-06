@@ -30,6 +30,7 @@ class GuiTune;
 
 class AudioBase : public QThread
 {
+  Q_OBJECT
  public:
   AudioBase(QString);
   virtual ~AudioBase();

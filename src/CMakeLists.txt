@@ -32,6 +32,10 @@ if (ENABLE_JACK)
 endif (ENABLE_JACK)
 
 set(QTGUITUNE_UI_HEADERS ./guitune.h
+                         ./audio_base.h
+                         ./audio_oss.h
+                         ./audio_alsa.h
+                         ./audio_jack.h
                          ./mainwindow.h)
 
 # Manage translation files

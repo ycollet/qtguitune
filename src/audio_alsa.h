@@ -32,6 +32,7 @@
 
 class AudioALSA : public AudioBase
 {
+  Q_OBJECT
  public:
   AudioALSA(QString);
   virtual ~AudioALSA();

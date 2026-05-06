@@ -33,6 +33,7 @@
 
 class AudioJACK : public AudioBase
 {
+  Q_OBJECT
  public:
   AudioJACK(QString client_name);
   virtual ~AudioJACK();
